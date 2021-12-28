@@ -56,13 +56,11 @@ GO
 
 
 CREATE TABLE [dbo].[NodesByDay](
-	[Day] [TINYINT] NOT NULL,
-	[Year] [INT] NOT NULL,
+	[Day] [date] NOT NULL,
 	[NodeCount] [INT] NOT NULL,
  CONSTRAINT [PK_NodesByDay] PRIMARY KEY CLUSTERED 
 (
-	[Day] ASC,
-	[Year] ASC
+	[Day] ASC	
 )) 
 GO
 
@@ -86,6 +84,16 @@ CREATE TABLE [dbo].[NodesByMonth](
 	[Month] ASC,
 	[Year] ASC
 )) 
+GO
+
+CREATE VIEW [dbo].[ActiveNodes]
+AS
+SELECT        [Address], [Port], PublicIP, AgentName, PeerName, [Version], BlocksToKeep, NiPoPoWBootstrapped, 
+			  StateType, VerifyingTransactions, PeerCount, ContinentCode, CountryCode, ContinentName, CountryName, 
+			  RegionCode, RegionName, City, ZipOrPostalCode, Latitude, Longitude, ISP
+FROM          dbo.Nodes
+WHERE        (DateUpdated > DATEADD(Day, - 1, GetUTCDate()))
+
 GO
 
 CREATE PROCEDURE [dbo].[AddUpdateDiscoveredNodes] 
@@ -190,5 +198,28 @@ BEGIN
 	WHERE
 		[Address] = @address AND [Port] = @port
     
+END
+GO
+
+CREATE PROCEDURE DailyMaintenanceAndAnalytics 	
+AS
+BEGIN
+	
+	SET NOCOUNT ON;
+
+    DELETE 
+	FROM dbo.Nodes
+	WHERE (DateUpdated is NULL OR DateUpdated < DATEADD(DAY, -4, GETUTCDATE())) AND ContactAttempts >= 5
+
+	INSERT INTO dbo.NodesByDay	([Day], [NodeCount])
+	SELECT 
+		CAST(GETUTCDATE() as date),
+	    (Select COUNT(*) FROM dbo.ActiveNodes)
+	WHERE NOT EXISTS (
+		SELECT 1 FROM dbo.NodesByDay
+		WHERE [Day] =  CAST(GETUTCDATE() as date)
+	)
+
+	
 END
 GO

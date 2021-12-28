@@ -27,12 +27,13 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
 
         public async Task<IEnumerable<NodeIdentifier>> GetAddressesForConnection(int topN = 10)
         {
+            logger.LogDebug("Executing GetAddressesForConnection");
             string sql = @$"
   SELECT TOP ({topN}) [Address], [Port]
   FROM [dbo].[Nodes]
   WHERE PublicIP = 1
-     AND (DatePeersQueried IS NULL OR DatePeersQueried < DATEADD(DAY, -2, GETUTCDATE()))
-     AND (DateContactAttempted IS NULL OR DateContactAttempted < DATEADD(DAY, -2, GETUTCDATE()))
+     AND (DatePeersQueried IS NULL OR DatePeersQueried < DATEADD(DAY, -1, GETUTCDATE()))
+     AND (DateContactAttempted IS NULL OR DateContactAttempted < DATEADD(DAY, -1, GETUTCDATE()))
   ORDER BY NEWID()
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -41,12 +42,14 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
             }
         }
 
+        //Geo location will update every two months
         public async Task<IEnumerable<string>> GetAddressesForGeoLookup(int topN = 10)
         {
+            logger.LogDebug("Executing GetAddressesForGeoLookup");
             string sql = $@"
   SELECT TOP ({topN}) [Address]
   FROM [dbo].[Nodes]
-  WHERE PublicIP = 1 AND (GeoDateUpdated IS NULL OR GeoDateUpdated < DATEADD(MONTH, -2, GETUTCDATE()))
+  WHERE PublicIP = 1 AND (GeoDateUpdated IS NULL OR GeoDateUpdated < DATEADD(MONTH, -1, GETUTCDATE()))
   ORDER BY NEWID()
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -81,19 +84,8 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
                     dynamicParameters.Add("@port", null);
                 }
 
-                try
-                {
-                    await connection.ExecuteAsync("[dbo].[AddUpdateDiscoveredNodes]", dynamicParameters, null, null,
-                        CommandType.StoredProcedure);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
-
-                
-
+                await connection.ExecuteAsync("[dbo].[AddUpdateDiscoveredNodes]", dynamicParameters, null, null,
+                    CommandType.StoredProcedure);
             }
         }
 
@@ -129,37 +121,35 @@ SET
 WHERE
     Address = @address
 ";
-            try
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                await connection.ExecuteAsyncWithRetry(command, new
                 {
-                    await connection.ExecuteAsyncWithRetry(command, new
-                    {
-                        address = response.IpAddress,
-                        continentCode = response.ContinentCode,
-                        continentName = response.ContinentName,
-                        countryCode = response.CountryCode,
-                        countryName = response.ContinentName,
-                        regionCode = response.RegionCode,
-                        regionName = response.RegionName,
-                        city = response.City,
-                        zip = response.Zip,
-                        latitude = response.Latitude,
-                        longitude = response.Longitude,
-                        isp = response.Connection?.Isp
-                    });
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
+                    address = response.IpAddress,
+                    continentCode = response.ContinentCode,
+                    continentName = response.ContinentName,
+                    countryCode = response.CountryCode,
+                    countryName = response.ContinentName,
+                    regionCode = response.RegionCode,
+                    regionName = response.RegionName,
+                    city = response.City,
+                    zip = response.Zip,
+                    latitude = response.Latitude,
+                    longitude = response.Longitude,
+                    isp = response.Connection?.Isp
+                });
             }
         }
 
-        public Task UpdateDateTables()
+        public async Task PerformMaintenanceAndAnalytics()
         {
-            return Task.CompletedTask;
+            logger.LogDebug("Executing PerformMaintenanceAndAnalytics");
+            string sql = "dbo.DailyMaintenanceAndAnalytics";
+
+            using (SqlConnection connection = new SqlConnection(sql))
+            {
+                await connection.ExecuteAsyncWithRetry(sql, null, null, null, CommandType.StoredProcedure);
+            }
         }
 
         private DataTable CreateNodeDataTable(IEnumerable<PeerSpec> nodes)

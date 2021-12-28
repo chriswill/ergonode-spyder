@@ -20,6 +20,6 @@ namespace ErgoNodeSharp.Data
 
         public Task UpdateNodeGeo(GeoIpResponse response);
 
-        public Task UpdateDateTables();
+        public Task PerformMaintenanceAndAnalytics();
     }
 }

@@ -22,6 +22,7 @@ namespace ErgoNodeSpyder.App
         private readonly ErgoConfiguration ergoConfiguration;
         private readonly NetworkConfiguration networkConfiguration;
         private readonly INodeInfoRepository nodeRepository;
+        private readonly ErgoNodeSpyderConfiguration spyderConfiguration;
         private readonly IGeoIpService geoIpService;
         private readonly ILogger<WorkerService> logger;
         private ConnectionListener? listener;
@@ -35,12 +36,14 @@ namespace ErgoNodeSpyder.App
         //Which nodes that have been sent GetPeers requests
         private readonly ConcurrentDictionary<string, byte> getPeerRequests;
 
-        public WorkerService(ErgoConfiguration ergoConfiguration, NetworkConfiguration networkConfiguration, INodeInfoRepository nodeRepository, IGeoIpService geoIpService, ILoggerFactory factory)
+        public WorkerService(ErgoConfiguration ergoConfiguration, NetworkConfiguration networkConfiguration, 
+            INodeInfoRepository nodeRepository, IGeoIpService geoIpService, ErgoNodeSpyderConfiguration spyderConfiguration, ILoggerFactory factory)
         {
             this.ergoConfiguration = ergoConfiguration;
             this.networkConfiguration = networkConfiguration;
             this.nodeRepository = nodeRepository;
             this.geoIpService = geoIpService;
+            this.spyderConfiguration = spyderConfiguration;
             ApplicationLogging.LoggerFactory = factory;
             logger = ApplicationLogging.LoggerFactory.CreateLogger<WorkerService>();
             nodeConnections = new ConcurrentDictionary<string, NodeConnection>();
@@ -83,11 +86,14 @@ namespace ErgoNodeSpyder.App
             moreNodesTimer.AutoReset = true;
             moreNodesTimer.Enabled = true;
 
-            geoInfoTimer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
-            geoInfoTimer.Elapsed += GeoInfoTimer_Elapsed;
-            geoInfoTimer.AutoReset = true;
-            geoInfoTimer.Enabled = true;
-
+            if (spyderConfiguration.PerformGeoIpLookup)
+            {
+                geoInfoTimer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
+                geoInfoTimer.Elapsed += GeoInfoTimer_Elapsed;
+                geoInfoTimer.AutoReset = true;
+                geoInfoTimer.Enabled = true;
+            }
+            
             analyticsTimer = new System.Timers.Timer(TimeSpan.FromDays(1).TotalMilliseconds);
             analyticsTimer.Elapsed += AnalyticsTimer_Elapsed;
             analyticsTimer.AutoReset = true;
@@ -144,7 +150,7 @@ namespace ErgoNodeSpyder.App
         private void AnalyticsTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
             logger.LogInformation("Analytics timer executed");
-            Task.Run(() => nodeRepository.UpdateDateTables());
+            Task.Run(() => nodeRepository.PerformMaintenanceAndAnalytics());
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -175,7 +181,7 @@ namespace ErgoNodeSpyder.App
             nodeConnection.OnDataReceived += NodeConnectionOnDataReceived;
             nodeConnection.OnConnectionFailed += NodeConnection_OnConnectionFailed;
 
-            logger.LogInformation("Connecting to node {0}", address);
+            logger.LogInformation("Connecting to {0}", address);
             string[] parts = address.Split(new char[] { ':' });
             IPAddress ipAddress = IPAddress.Parse(parts[0]);
             int port = int.Parse(parts[1]);
@@ -194,8 +200,16 @@ namespace ErgoNodeSpyder.App
         {
             logger.LogError("Connection failed to {0}", address);
             await nodeRepository.RecordFailedConnection(address);
-            nodeConnections.TryRemove(address, out _);
-            getPeerRequests.TryRemove(address, out _);
+            bool result = nodeConnections.TryRemove(address, out _);
+            if (!result)
+            {
+                logger.LogDebug("Unable to remove {0} from Node connections list", address);
+            }
+            result = getPeerRequests.TryRemove(address, out _);
+            if (!result)
+            {
+                logger.LogDebug("Unable to remove {0} from Peer requests list", address);
+            }
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
@@ -218,7 +232,7 @@ namespace ErgoNodeSpyder.App
         private async Task NodeConnectionOnDataReceived(byte[] data, NodeConnection nodeConnection)
         {
             if (data.Length == 0) return;
-            logger.LogInformation("Data received by node from {0}", nodeConnection.Address);
+            logger.LogInformation("Data received from {0}", nodeConnection.Address);
             string message = data.ToHexString();
             string ipAddress = nodeConnection.Address;
 
@@ -236,15 +250,23 @@ namespace ErgoNodeSpyder.App
                         PeersMessage peersMessage = (PeersMessage)nodeMessage;
                         logger.LogInformation("Received {0} from {1}", nodeMessage, ipAddress);
                         await nodeRepository.AddUpdateNodes(peersMessage.Peers, ipAddress);
-                        getPeerRequests.TryRemove(ipAddress, out _);
-
+                        
                         logger.LogInformation("Disconnecting from {0}", ipAddress);
+                        bool result = getPeerRequests.TryRemove(ipAddress, out _);
+                        if (!result)
+                        {
+                            logger.LogDebug("Unable to remove {0} from Peer requests list", ipAddress);
+                        }
+                        result = nodeConnections.TryRemove(ipAddress, out _);
+                        if (!result)
+                        {
+                            logger.LogDebug("Unable to remove {0} from Node connections list", ipAddress);
+                        }
                         nodeConnection.Disconnect();
-                        nodeConnections.TryRemove(ipAddress, out _);
                     }
                     else
                     {
-                        logger.LogWarning("Received unsupported type {0} from {1}", nodeMessage, ipAddress);
+                        logger.LogWarning("Received unsupported message type {0} from {1}", nodeMessage, ipAddress);
                     }
                 }
                 catch (Exception e)
@@ -262,9 +284,7 @@ namespace ErgoNodeSpyder.App
                 if (peerRequestsExist && requestCount >= 5)
                 {
                     nodeConnection.Disconnect();
-                    getPeerRequests.TryRemove(ipAddress, out _);
-                    nodeConnections.TryRemove(ipAddress, out _);
-                    await nodeRepository.RecordFailedConnection(ipAddress);
+                    await NodeConnection_OnConnectionFailed(ipAddress);
                     logger.LogWarning("Node {0} was disconnected because it would not respond with a Peers message", ipAddress);
                     return;
                 }

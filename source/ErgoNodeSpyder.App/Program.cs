@@ -18,27 +18,6 @@ namespace ErgoNodeSpyder.App
 
         static void Main(string[] args)
         {
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", true)
-                .AddUserSecrets<Program>(optional: true)
-                .Build();
-
-            // Specifying the configuration for serilog
-            Log.Logger = new LoggerConfiguration()
-                .ReadFrom.Configuration(configuration)
-                .Enrich.FromLogContext()
-                .WriteTo.Console(restrictedToMinimumLevel:LogEventLevel.Information)
-                .WriteTo.File("logs\\log.txt",
-                    rollingInterval: RollingInterval.Day,
-                    retainedFileCountLimit: 14,
-                    buffered: true,
-                    flushToDiskInterval: TimeSpan.FromSeconds(30))
-                .CreateLogger();
-
-            Log.Information("Ergo-Spyder application starting");
-
             try
             {
                 CreateHostBuilder(args).Build().Run();
@@ -56,21 +35,25 @@ namespace ErgoNodeSpyder.App
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
+                .UseWindowsService()
                 .UseSerilog()
-                .ConfigureAppConfiguration((ctx, builder) =>
-                {
-                    builder.SetBasePath(Directory.GetCurrentDirectory())
-                        .AddJsonFile("appsettings.json", optional: false)
-                        .AddEnvironmentVariables()
-                        .AddUserSecrets<Program>(optional: true);
-
-                })
-                .ConfigureLogging((ctx, logging) =>
-                {
-                    
-                })
                 .ConfigureServices((ctx, services) =>
                 {
+                    var logDirectory = ctx.Configuration["LogDirectory"] ?? "logs";
+
+                    // Specifying the configuration for serilog
+                    LoggerConfiguration loggerConfiguration = new LoggerConfiguration()
+                        .ReadFrom.Configuration(ctx.Configuration)
+                        .Enrich.FromLogContext()
+                        .WriteTo.Console(restrictedToMinimumLevel: LogEventLevel.Information)
+                        .WriteTo.File($"{logDirectory}\\log.txt",
+                            rollingInterval: RollingInterval.Day,
+                            retainedFileCountLimit: 14,
+                            buffered: true,
+                            flushToDiskInterval: TimeSpan.FromSeconds(30));
+
+                    Log.Logger = loggerConfiguration.CreateLogger();
+
                     ergoConfiguration = new ErgoConfiguration();
 
                     new ConfigureFromConfigurationOptions<ErgoConfiguration>(ctx.Configuration.GetSection("ergo"))

@@ -107,7 +107,7 @@ namespace ErgoNodeSharp.Models.Tests
             string deserializedMessage = bytes.ToHexString();
 
             HandshakeMessage handshakeMessage2 = HandshakeMessage.Deserialize(deserializedMessage);
-            Assert.IsNull(handshakeMessage2);
+            Assert.IsNotNull(handshakeMessage2);
             Assert.AreEqual(message.Length, deserializedMessage.Length);
             Assert.AreEqual(message, deserializedMessage);
         }

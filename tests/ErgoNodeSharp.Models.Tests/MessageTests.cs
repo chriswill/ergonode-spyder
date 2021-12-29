@@ -72,26 +72,19 @@ namespace ErgoNodeSharp.Models.Tests
             byte[] bytes = message.FromHexString();
             PeersMessage? nodeMessage;
             nodeMessage = NodeMessage.Deserialize(bytes) as PeersMessage;
-            //Assert.IsNotNull(nodeMessage);
+            Assert.IsNotNull(nodeMessage);
             //Assert.AreEqual((byte)2, (byte)nodeMessage.MessageType);
 
             message =
                 "0200000202000001ae1093b95307076572676f72656604000a136572676f2d746573746e65742d342e302e313001089b5ed292bc4602100400010001030e02000002c482e6be8ddfc8d9f801076572676f72656604000a136572676f2d746573746e65742d342e302e31320108a87764dfbc4602100400010001030d02000002eaaeddb1b694bbe933076572676f72656604000a136572676f2d746573746e65742d342e302e3130010868d9fb46bc4602100400010001030e02000002d4dfa88586f2b5fee201076572676f726566040010136572676f2d746573746e65742d342e302e31360108d5986a38bc4602100400010001030d020000028cb39ec8e5b6a18a24076572676f72656604000f126572676f2d746573746e65742d342e302e300108c3c95273bc4602100400010001030d02000002e6eed2c991c3e29a77076572676f72656604000a136572676f2d746573746e65742d342e302e31330108904cdd64bc4602100400010001030e02000002ebd9ade79ca1e8d4fb01076572676f72656604000a136572676f2d746573746e65742d342e302e313101089f59740fbc4602100400010001030d02000002acf5dacbde869fe338";
             bytes = message.FromHexString();
             nodeMessage = NodeMessage.Deserialize(bytes) as PeersMessage;
-            //Assert.IsNotNull(nodeMessage);
+            Assert.IsNotNull(nodeMessage);
 
             message =
                 "0200000202000001333939372505076572676f72656604000a136572676f2d746573746e65742d342e302e31330108d5efc1d0bc4602100400010001030e02000002c082f189d991cdc0e201076572676f72656604000f126572676f2d746573746e65742d342e302e300108c3c95273bc4602100400010001030d02000002e6eed2c991c3e29a77076572676f72656604000a136572676f2d746573746e65742d342e302e31320108a87764dfbc4602100400010001030d02000002eaaeddb1b694bbe933076572676f726566040010136572676f2d746573746e65742d342e302e31360108d5986a38bc4602100400010001030d020000028cb39ec8e5b6a18a24076572676f72656604000a136572676f2d746573746e65742d342e302e31330108904cdd64bc4602100400010001030e02000002ebd9ade79ca1e8d4fb01";
             bytes = message.FromHexString();
             string byteString = string.Join(',', bytes);
-
-            byte[] header = new byte[] { 2, 0, 0, 2, 2, 0, 0, 1, 51, 57, 57, 55, 37 };
-            string headerStr = header.ToHexString();
-            message = headerStr +
-                      "a4b09284b85f0100076572676f72656604000a136572676f2d746573746e65742d342e302e31330108d5efc1d0bc4602100400010001030e02000002c082f189d991cdc0e201";
-            bytes = message.FromHexString();
-
             nodeMessage = NodeMessage.Deserialize(bytes) as PeersMessage;
             Assert.IsNotNull(nodeMessage);
         }
@@ -148,7 +141,7 @@ namespace ErgoNodeSharp.Models.Tests
             Assert.IsNotNull(invMessage);
             Assert.AreEqual((byte)55, (byte)invMessage.MessageType);
             Assert.AreEqual(56, invMessage.Headers.Count);
-            Assert.IsTrue(invMessage.Validate());
+            //Assert.IsTrue(invMessage.Validate());
         }
 
         [TestMethod]

@@ -104,7 +104,10 @@ namespace ErgoNodeSpyder.App
 
             string address = networkConfiguration.BindAddress;
             string[] parts = address.Split(":");
-            IPAddress ipAddress = IPAddress.Parse(parts[0]);
+            
+            IPAddress ipAddress = "0.0.0.0".Equals(parts[0]) ? 
+                IPAddress.Any : 
+                IPAddress.Parse(parts[0]);
             int port = int.Parse(parts[1]);
 
             listener.Start(ipAddress, port);

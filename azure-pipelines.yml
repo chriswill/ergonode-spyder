@@ -1,0 +1,59 @@
+name: $(MajorVersion).$(MinorVersion).$(PatchVersion).$(rev:rr)
+
+trigger:
+- main
+
+pool:
+  vmImage: windows-latest
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: UseDotNet@2
+  displayName: Use .NET 6.0
+  inputs:
+    packageType: 'sdk'
+    version: '6.0.x'
+
+- task: DotNetCoreCLI@2
+  displayName: Restore app
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+    feedsToUse: 'select'
+    vstsFeed: '7a124f36-f58f-4fba-83fa-320bd1c605a7'
+
+- task: VersionDotNetCoreAssemblies@2
+  displayName: 'Update version'
+  inputs:
+    AddDefault: true
+
+- task: DotNetCoreCLI@2
+  displayName: Build
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: Run Tests
+  inputs:
+    command: 'test'
+    projects: 'tests/**/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --filter TestCategory!=Local'
+    testRunTitle: 'Unit tests'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish Spyder Agent'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '**/ErgoNodeSpyder.App.csproj'
+    arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'    
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Spyder Agent Artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)\ErgoNodeSpyder.App.zip'
+    ArtifactName: Spyder-Agent    

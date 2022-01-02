@@ -74,7 +74,7 @@ namespace ErgoNodeSpyder.App
                         ctx.Configuration.GetConnectionString(nodeSpyderConfiguration.ConnectionStringName);
 
                     services.AddSingleton(nodeSpyderConfiguration);
-
+                    
                     switch (nodeSpyderConfiguration.DatabaseType)
                     {
                         case "MsSql":

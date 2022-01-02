@@ -129,7 +129,7 @@ WHERE
                     continentCode = response.ContinentCode,
                     continentName = response.ContinentName,
                     countryCode = response.CountryCode,
-                    countryName = response.ContinentName,
+                    countryName = response.CountryName,
                     regionCode = response.RegionCode,
                     regionName = response.RegionName,
                     city = response.City,

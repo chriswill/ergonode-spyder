@@ -143,12 +143,19 @@ WHERE
 
         public async Task PerformMaintenanceAndAnalytics()
         {
-            logger.LogDebug("Executing PerformMaintenanceAndAnalytics");
+            logger.LogInformation("Executing PerformMaintenanceAndAnalytics");
             string sql = "dbo.DailyMaintenanceAndAnalytics";
 
-            using (SqlConnection connection = new SqlConnection(sql))
+            try
             {
-                await connection.ExecuteAsyncWithRetry(sql, null, null, null, CommandType.StoredProcedure);
+                using (SqlConnection connection = new SqlConnection(sql))
+                {
+                    await connection.ExecuteAsyncWithRetry(sql, null, null, null, CommandType.StoredProcedure);
+                }
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, e.Message);
             }
         }
 

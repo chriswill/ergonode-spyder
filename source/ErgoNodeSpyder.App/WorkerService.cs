@@ -53,7 +53,11 @@ namespace ErgoNodeSpyder.App
         private void MoreNodesTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
             logger.LogDebug("Node query event executed");
-            logger.LogInformation("{0} node connections stored in dictionary", nodeConnections.Count);
+            if (nodeConnections.Count > 0)
+            {
+                logger.LogInformation("{0} node connections stored in dictionary", nodeConnections.Count);
+            }
+            
             foreach (KeyValuePair<string, NodeConnection> nodeConnection in nodeConnections)
             {
                 logger.LogInformation(nodeConnection.Key);
@@ -62,7 +66,7 @@ namespace ErgoNodeSpyder.App
             Task<IEnumerable<NodeIdentifier>> task = nodeRepository.GetAddressesForConnection();
             List<NodeIdentifier> identifiers = task.Result.ToList();
 
-            logger.LogInformation("{0} waiting nodes found for connection", identifiers.Count);
+            logger.LogDebug("{0} waiting nodes found for connection", identifiers.Count);
 
             foreach (NodeIdentifier ident in identifiers)
             {
@@ -125,8 +129,11 @@ namespace ErgoNodeSpyder.App
             Task<IEnumerable<string>> task = nodeRepository.GetAddressesForGeoLookup(25);
 
             List<string> nodeAddresses = task.Result.ToList();
-            logger.LogInformation("{0} waiting nodes found for geo lookup", nodeAddresses.Count);
-
+            if (nodeAddresses.Count > 0)
+            {
+                logger.LogInformation("{0} waiting nodes found for geo lookup", nodeAddresses.Count);
+            }
+            
             foreach (string address in nodeAddresses)
             {
                 //This is all single-threaded... don't think there is any reason to multi-thread
@@ -153,7 +160,8 @@ namespace ErgoNodeSpyder.App
         private void AnalyticsTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
             logger.LogInformation("Analytics timer executed");
-            Task.Run(() => nodeRepository.PerformMaintenanceAndAnalytics());
+            Task t = nodeRepository.PerformMaintenanceAndAnalytics();
+            t.Wait();
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -169,12 +177,10 @@ namespace ErgoNodeSpyder.App
         {
             CancellationToken token = new CancellationToken();
             NodeConnection nodeConnection = new NodeConnection(token);
+            nodeConnections.TryAdd(client.GetAddress(), nodeConnection);
 
             HandshakeMessage message = HandshakeMessage.CreateHandshake(ergoConfiguration, networkConfiguration);
-
             await nodeConnection.Connect(client, message);
-
-            nodeConnections.TryAdd(client.GetAddress(), nodeConnection);
         }
         
         private async Task ConnectToNode(string address)
@@ -203,15 +209,19 @@ namespace ErgoNodeSpyder.App
         {
             logger.LogError("Connection failed to {0}", address);
             await nodeRepository.RecordFailedConnection(address);
-            bool result = nodeConnections.TryRemove(address, out _);
+            bool result = getPeerRequests.TryRemove(address, out _);
+            if (!result)
+            {
+                logger.LogDebug("Unable to remove {0} from Peer requests list", address);
+            }
+            result = nodeConnections.TryRemove(address, out NodeConnection? nodeConnection);
             if (!result)
             {
                 logger.LogDebug("Unable to remove {0} from Node connections list", address);
             }
-            result = getPeerRequests.TryRemove(address, out _);
-            if (!result)
+            else
             {
-                logger.LogDebug("Unable to remove {0} from Peer requests list", address);
+                nodeConnection?.Dispose();
             }
         }
 
@@ -266,6 +276,7 @@ namespace ErgoNodeSpyder.App
                             logger.LogDebug("Unable to remove {0} from Node connections list", ipAddress);
                         }
                         nodeConnection.Disconnect();
+                        nodeConnection.Dispose();
                     }
                     else
                     {

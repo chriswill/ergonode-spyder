@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using ErgoNodeSharp.Data;
 using ErgoNodeSharp.Models.Responses;
 using ErgoNodeSharp.Models.Responses.NodeSpyder;
@@ -15,13 +16,13 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
     [ApiController]
     public class NodesController : ControllerBase
     {
-        private readonly INodeInfoRepository nodeInfoRepository;
+        private readonly INodeReportingRepository repository;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly ILogger<NodesController> logger;
 
-        public NodesController(INodeInfoRepository nodeInfoRepository, IHttpContextAccessor httpContextAccessor, ILogger<NodesController> logger)
+        public NodesController(INodeReportingRepository nodeReportingRepository, IHttpContextAccessor httpContextAccessor, ILogger<NodesController> logger)
         {
-            this.nodeInfoRepository = nodeInfoRepository;
+            repository = nodeReportingRepository;
             this.httpContextAccessor = httpContextAccessor;
             this.logger = logger;
         }
@@ -36,6 +37,129 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
                 response.Links.First = httpContextAccessor.HttpContext.Request.GetEncodedUrl();
                 response.Links.Self = httpContextAccessor.HttpContext.Request.GetEncodedUrl();
             }
+
+            response.Data = await repository.GetNodeInfos();
+            response.Meta.TotalRecords = response.Data.Count();
+
+            return Ok(response);
+        }
+
+        [Route("versions")]
+        public async Task<IActionResult> Versions()
+        {
+            JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
+
+            response.Data = await repository.GetVersionCount();
+            response.Meta.TotalRecords = response.Data.Count();
+
+            return Ok(response);
+        }
+
+        [Route("geo-continents")]
+        public async Task<IActionResult> Continents()
+        {
+            JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
+
+            response.Data = await repository.GetContinentCount();
+            response.Meta.TotalRecords = response.Data.Count();
+
+            return Ok(response);
+        }
+
+        [Route("geo-countries")]
+        public async Task<IActionResult> Countries()
+        {
+            JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
+
+            response.Data = await repository.GetCountryCount();
+            response.Meta.TotalRecords = response.Data.Count();
+
+            return Ok(response);
+        }
+
+        [Route("geo-isps")]
+        public async Task<IActionResult> Isps(int count = 10)
+        {
+            JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
+
+            response.Data = await repository.GetIspCount(count);
+            response.Meta.TotalRecords = response.Data.Count();
+
+            return Ok(response);
+        }
+
+        [Route("state-types")]
+        public async Task<IActionResult> StateTypes()
+        {
+            JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
+
+            response.Data = await repository.GetStateTypeCount();
+            response.Meta.TotalRecords = response.Data.Count();
+
+            return Ok(response);
+        }
+
+        [Route("verifying")]
+        public async Task<IActionResult> Verifying()
+        {
+            JsonApiResponse<BoolValuePair> response = new JsonApiResponse<BoolValuePair>();
+
+            if (httpContextAccessor.HttpContext != null)
+            {
+                logger.LogDebug("Received GetNodeInfos request from " + httpContextAccessor.HttpContext.Request.Host);
+                response.Links.First = httpContextAccessor.HttpContext.Request.GetEncodedUrl();
+                response.Links.Self = httpContextAccessor.HttpContext.Request.GetEncodedUrl();
+            }
+
+            response.Data = await repository.GetVerifyingCount();
+            response.Meta.TotalRecords = response.Data.Count();
+
+            return Ok(response);
+        }
+
+        [Route("daily-count")]
+        public async Task<IActionResult> DailyCount(int days = 10)
+        {
+            JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
+
+            response.Data = await repository.GetDailyCount(days);
+            response.Meta.TotalRecords = response.Data.Count();
+
+            return Ok(response);
+        }
+
+        [Route("weekly-count")]
+        public async Task<IActionResult> WeeklyCount(int weeks = 12)
+        {
+            JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
+
+            response.Data = await repository.GetWeekCount(weeks);
+            response.Meta.TotalRecords = response.Data.Count();
+
+            return Ok(response);
+        }
+
+        [Route("monthly-count")]
+        public async Task<IActionResult> MonthlyCount(int months = 6)
+        {
+            JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
+
+            response.Data = await repository.GetMonthCount(months);
+            response.Meta.TotalRecords = response.Data.Count();
+
+            return Ok(response);
+        }
+
+        private JsonApiResponse<StringValuePair> CreateJsonApiResponse()
+        {
+            JsonApiResponse<StringValuePair> response = new JsonApiResponse<StringValuePair>();
+            if (httpContextAccessor.HttpContext == null) return response;
+
+            logger.LogDebug("Received GetNodeInfos request from " + httpContextAccessor.HttpContext.Request.Host);
+            response.Links.First = httpContextAccessor.HttpContext.Request.GetEncodedUrl();
+            response.Links.Self = httpContextAccessor.HttpContext.Request.GetEncodedUrl();
+
+            return response;
         }
     }
 }

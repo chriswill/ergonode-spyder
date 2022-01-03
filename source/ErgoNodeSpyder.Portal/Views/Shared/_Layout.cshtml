@@ -11,7 +11,7 @@
 	
 	<link href="~/css/plugins.bundle.css" rel="stylesheet" type="text/css" />
 	<link href="~/css/style.bundle.css" rel="stylesheet" type="text/css" />
-	
+    @await RenderSectionAsync("styles", required: false)
 </head>
 
 <body id="kt_body" class="header-extended header-fixed header-tablet-and-mobile-fixed">
@@ -42,7 +42,9 @@
 
 	<script>var hostUrl = "~/js/";</script>
 	<script src="~/js/plugins.bundle.js"></script>
-	<script src="~/js/scripts.bundle.js"></script>
+    <script src="~/js/scripts.bundle.js"></script>
+
+@await RenderSectionAsync("scripts", required: false)
 </body>
 
 </html>

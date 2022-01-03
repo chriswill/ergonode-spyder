@@ -6,4 +6,14 @@
 
         public int Value { get; set; }
     }
+
+    public class StringValuePair : SimpleKeyValuePair<string>
+    {
+
+    }
+
+    public class BoolValuePair : SimpleKeyValuePair<bool>
+    {
+
+    }
 }

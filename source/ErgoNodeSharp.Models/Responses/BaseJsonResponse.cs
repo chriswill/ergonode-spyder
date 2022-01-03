@@ -28,6 +28,11 @@ namespace ErgoNodeSharp.Models.Responses
         [JsonProperty("data", Order = 4)]
         public IEnumerable<T> Data { get; set; }
 
+        public JsonApiResponse()
+        {
+            Meta.Pages = 1;
+        }
+
     }
 
     public class Links
@@ -52,7 +57,7 @@ namespace ErgoNodeSharp.Models.Responses
 
         public Meta()
         {
-            Authors = new List<string> { "CloudScope LLC" };
+            Authors = new List<string> { "Ergo Node Spyder Authors" };
         }
     }
 

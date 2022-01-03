@@ -8,22 +8,22 @@ namespace ErgoNodeSharp.Data
     {
         Task<IEnumerable<NodeInfo>> GetNodeInfos();
 
-        Task<IEnumerable<SimpleKeyValuePair<string>>> GetVersionCount();
+        Task<IEnumerable<StringValuePair>> GetVersionCount();
 
-        Task<IEnumerable<SimpleKeyValuePair<string>>> GetContinentCount();
+        Task<IEnumerable<StringValuePair>> GetContinentCount();
 
-        Task<IEnumerable<SimpleKeyValuePair<string>>> GetCountryCount();
+        Task<IEnumerable<StringValuePair>> GetCountryCount();
 
-        Task<IEnumerable<SimpleKeyValuePair<string>>> GetStateTypeCount();
+        Task<IEnumerable<StringValuePair>> GetStateTypeCount();
 
-        Task<IEnumerable<SimpleKeyValuePair<bool>>> GetVerifyingCount();
+        Task<IEnumerable<BoolValuePair>> GetVerifyingCount();
 
-        Task<IEnumerable<SimpleKeyValuePair<string>>> GetIspCount();
+        Task<IEnumerable<StringValuePair>> GetIspCount(int count = 10);
 
-        Task<IEnumerable<SimpleKeyValuePair<string>>> GetDailyCount(int days = 10);
+        Task<IEnumerable<StringValuePair>> GetDailyCount(int days = 10);
 
-        Task<IEnumerable<SimpleKeyValuePair<string>>> GetMonthCount(int months = 6);
+        Task<IEnumerable<StringValuePair>> GetMonthCount(int months = 6);
 
-        Task<IEnumerable<SimpleKeyValuePair<string>>> GetWeekCount(int weeks = 12);
+        Task<IEnumerable<StringValuePair>> GetWeekCount(int weeks = 12);
     }
 }

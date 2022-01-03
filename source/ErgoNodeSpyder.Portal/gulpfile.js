@@ -52,6 +52,8 @@ function defaultTask(cb) {
 
     gulp.src('app/plugins/global/fonts/**/*').pipe(gulp.dest(targetPath + 'css/fonts/'));
 
+    gulp.src('app/js/pages/**/*').pipe(gulp.dest(targetPath + 'js/pages/'));
+
     cb();
 }
 

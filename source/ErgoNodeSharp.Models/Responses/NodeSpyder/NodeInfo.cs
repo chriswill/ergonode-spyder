@@ -1,4 +1,6 @@
-﻿namespace ErgoNodeSharp.Models.Responses.NodeSpyder
+﻿using System;
+
+namespace ErgoNodeSharp.Models.Responses.NodeSpyder
 {
     public class NodeInfo
     {
@@ -22,7 +24,11 @@
 
         public bool VerifyingTransactions { get; set; }
 
-        public int? PeersCount { get; set; }
+        public int? PeerCount { get; set; }
+
+        public DateTime DateAdded { get; set; }
+
+        public DateTime? DateUpdated { get; set; }
 
         public string ContinentCode { get; set; }
 

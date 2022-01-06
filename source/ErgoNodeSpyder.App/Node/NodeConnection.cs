@@ -52,7 +52,7 @@ namespace ErgoNodeSpyder.App.Node
             }
         }
 
-        public async Task Connect(TcpClient client, HandshakeMessage handshakeMessage)
+        public async Task RegisterConnection(TcpClient client, HandshakeMessage handshakeMessage)
         {
             tcpClient = client;
             Address = client.GetAddress();

@@ -13,7 +13,7 @@ using ErgoNodeSharp.Models.Responses;
 using ErgoNodeSharp.Services.GeoIp;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Serilog;
+using Timer = System.Timers.Timer;
 
 namespace ErgoNodeSpyder.App
 {
@@ -26,9 +26,9 @@ namespace ErgoNodeSpyder.App
         private readonly IGeoIpService geoIpService;
         private readonly ILogger<WorkerService> logger;
         private ConnectionListener? listener;
-        private System.Timers.Timer? moreNodesTimer;
-        private System.Timers.Timer? geoInfoTimer;
-        private System.Timers.Timer? analyticsTimer;
+        private Timer? moreNodesTimer;
+        private Timer? geoInfoTimer;
+        private Timer? analyticsTimer;
 
         //Our list of current connections
         private readonly ConcurrentDictionary<string, NodeConnection> nodeConnections;
@@ -85,26 +85,26 @@ namespace ErgoNodeSpyder.App
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            moreNodesTimer = new System.Timers.Timer(TimeSpan.FromMinutes(2).TotalMilliseconds);
+            moreNodesTimer = new Timer(TimeSpan.FromMinutes(2).TotalMilliseconds);
             moreNodesTimer.Elapsed += MoreNodesTimer_Elapsed;
             moreNodesTimer.AutoReset = true;
             moreNodesTimer.Enabled = true;
 
             if (spyderConfiguration.PerformGeoIpLookup)
             {
-                geoInfoTimer = new System.Timers.Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
+                geoInfoTimer = new Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
                 geoInfoTimer.Elapsed += GeoInfoTimer_Elapsed;
                 geoInfoTimer.AutoReset = true;
                 geoInfoTimer.Enabled = true;
             }
             
-            analyticsTimer = new System.Timers.Timer(TimeSpan.FromDays(1).TotalMilliseconds);
+            analyticsTimer = new Timer(TimeSpan.FromHours(4).TotalMilliseconds);
             analyticsTimer.Elapsed += AnalyticsTimer_Elapsed;
             analyticsTimer.AutoReset = true;
             analyticsTimer.Enabled = true;
 
-            listener = new ConnectionListener();
-            listener.OnClientConnected += Listener_OnClientConnected;
+            //listener = new ConnectionListener();
+            //listener.OnClientConnected += Listener_OnClientConnected;
 
             string address = networkConfiguration.BindAddress;
             string[] parts = address.Split(":");
@@ -114,7 +114,7 @@ namespace ErgoNodeSpyder.App
                 IPAddress.Parse(parts[0]);
             int port = int.Parse(parts[1]);
 
-            listener.Start(ipAddress, port);
+            //listener.Start(ipAddress, port);
 
             foreach (string peer in networkConfiguration.KnownPeers)
             {
@@ -141,7 +141,7 @@ namespace ErgoNodeSpyder.App
                 GeoIpResponse? response = null;
                 try
                 {
-                    Task<GeoIpResponse> geoTask = geoIpService.GetGeoIpResponse(address);
+                    Task<GeoIpResponse?> geoTask = geoIpService.GetGeoIpResponse(address);
                     response = geoTask.Result;
                 }
                 catch
@@ -159,7 +159,23 @@ namespace ErgoNodeSpyder.App
 
         private void AnalyticsTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
         {
-            logger.LogInformation("Analytics timer executed");
+            if (sender is Timer timer)
+            {
+                DateTime nextExecution = e.SignalTime.AddMilliseconds(timer.Interval);
+                logger.LogInformation("Analytics timer executed. Next execution time at {0}", nextExecution);
+            }
+            else
+            {
+                logger.LogInformation("Analytics timer executed.");
+            }
+            
+            IEnumerable<NodeIdentifier> waitingNodes = nodeRepository.GetAddressesForConnection(1).Result;
+            if (waitingNodes.Any())
+            {
+                logger.LogWarning("Node query is currently running. Analytics cannot be run at this time.");
+                return;
+            }
+
             Task t = nodeRepository.PerformMaintenanceAndAnalytics();
             t.Wait();
         }
@@ -180,7 +196,7 @@ namespace ErgoNodeSpyder.App
             nodeConnections.TryAdd(client.GetAddress(), nodeConnection);
 
             HandshakeMessage message = HandshakeMessage.CreateHandshake(ergoConfiguration, networkConfiguration);
-            await nodeConnection.Connect(client, message);
+            await nodeConnection.RegisterConnection(client, message);
         }
         
         private async Task ConnectToNode(string address)
@@ -195,7 +211,7 @@ namespace ErgoNodeSpyder.App
             IPAddress ipAddress = IPAddress.Parse(parts[0]);
             int port = int.Parse(parts[1]);
             await nodeConnection.Connect(ipAddress, port);
-
+            
             nodeConnections.TryAdd(address, nodeConnection);
 
             while (!token.IsCancellationRequested)
@@ -219,17 +235,14 @@ namespace ErgoNodeSpyder.App
             {
                 logger.LogDebug("Unable to remove {0} from Node connections list", address);
             }
-            else
-            {
-                nodeConnection?.Dispose();
-            }
+            nodeConnection?.Dispose();
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
         {
             logger.LogInformation("The service is stopping");
-            listener?.Stop();
-
+            //listener?.Stop();
+            
             moreNodesTimer?.Stop();
             moreNodesTimer?.Dispose();
 

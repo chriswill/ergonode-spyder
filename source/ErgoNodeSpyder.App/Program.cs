@@ -39,6 +39,9 @@ namespace ErgoNodeSpyder.App
                 .UseSerilog()
                 .ConfigureServices((ctx, services) =>
                 {
+
+                    services.AddHttpClient<IGeoIpService, GeoIpService>();
+
                     var logDirectory = ctx.Configuration["LogDirectory"] ?? "logs";
 
                     // Specifying the configuration for serilog

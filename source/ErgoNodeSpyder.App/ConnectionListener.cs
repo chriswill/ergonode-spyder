@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 
 namespace ErgoNodeSpyder.App
 {
-
     public delegate Task ClientConnected(TcpClient client);
 
     public class ConnectionListener
@@ -16,7 +15,7 @@ namespace ErgoNodeSpyder.App
         private readonly ILogger<ConnectionListener>? logger;
         private TcpListener? listener;
         private bool started;
-
+        
         public ConnectionListener()
         {
             if (ApplicationLogging.LoggerFactory != null)
@@ -24,8 +23,7 @@ namespace ErgoNodeSpyder.App
                 logger = ApplicationLogging.LoggerFactory.CreateLogger<ConnectionListener>();
             }
         }
-
-
+        
         /// <summary>
         /// Begins listening on the port provided to the constructor
         /// </summary>
@@ -34,8 +32,8 @@ namespace ErgoNodeSpyder.App
             listener = new TcpListener(address, port);
             logger?.LogInformation("Started server on {0}:{1}", address, port);
 
-            Thread thread = new Thread(new ThreadStart(ListenForClients));
-            thread.Start();
+            Task.Run(ListenForClients);
+            
             started = true;
         }
 

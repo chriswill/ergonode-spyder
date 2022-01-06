@@ -42,7 +42,7 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
             }
         }
 
-        //Geo location will update every two months
+        //Geo location will update every month
         public async Task<IEnumerable<string>> GetAddressesForGeoLookup(int topN = 10)
         {
             logger.LogDebug("Executing GetAddressesForGeoLookup");
@@ -148,7 +148,7 @@ WHERE
 
             try
             {
-                using (SqlConnection connection = new SqlConnection(sql))
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     await connection.ExecuteAsyncWithRetry(sql, null, null, null, CommandType.StoredProcedure);
                 }

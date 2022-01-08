@@ -8,64 +8,81 @@
             <div class="col-md-6 col-xl-6 mb-md-5 mb-xxl-10">
                 <div class="row g-5 g-lg-10">
                     <div class="col-12">
-                    <div class="card overflow-hidden mb-5 mb-lg-10">
-                    <div class="card-header card-header-stretch">
-                        <h3 class="card-title">Nodes over time</h3>
-                        <div class="card-toolbar">
-                            <ul class="nav nav-tabs nav-line-tabs nav-stretch fs-6 border-0">
-                                <li class="nav-item">
-                                    <a class="nav-link active" data-bs-toggle="tab" href="#nodes-daily">Daily</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#nodes-weekly">Weekly</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#nodes-monthly">Monthly</a>
-                                </li>
-                            </ul>
+                        <div class="card overflow-hidden mb-5 mb-lg-10">
+                            <div class="card-header card-header-stretch">
+                                <h3 class="card-title">Nodes over time</h3>
+                                <div class="card-toolbar">
+                                    <ul class="nav nav-tabs nav-line-tabs nav-stretch fs-6 border-0">
+                                        <li class="nav-item">
+                                            <a class="nav-link active" data-bs-toggle="tab"
+                                                href="#nodes-daily">Daily</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#nodes-weekly">Weekly</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" data-bs-toggle="tab" href="#nodes-monthly">Monthly</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-body d-flex justify-content-between flex-column px-0 pb-0">
+                                <div class="tab-content" id="node-time-stats">
+                                    <div class="tab-pane fade show active" id="nodes-daily" role="tabpanel">
+                                        <div class="mb-4 px-9">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span id="daily-node-count"
+                                                    class="fs-2hx fw-bolder text-gray-800 me-2 lh-1"></span>
+                                            </div>
+                                            <span class="fs-6 fw-bold text-gray-400">Daily Active Nodes</span>
+                                        </div>
+                                        <div id="daily-node-display" class="min-h-auto" style="height: 150px"></div>
+                                    </div>
+                                    <div class="tab-pane fade" id="nodes-weekly" role="tabpanel">
+                                        <div class="mb-4 px-9">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span id="weekly-node-count"
+                                                    class="fs-2hx fw-bolder text-gray-800 me-2 lh-1"></span>
+                                            </div>
+                                            <span class="fs-6 fw-bold text-gray-400">Weekly Active Nodes
+                                                (average)</span>
+                                        </div>
+                                        <div id="weekly-node-display" class="min-h-auto" style="height: 150px"></div>
+                                    </div>
+                                    <div class="tab-pane fade" id="nodes-monthly" role="tabpanel">
+                                        <div class="mb-4 px-9">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <span id="monthly-node-count"
+                                                    class="fs-2hx fw-bolder text-gray-800 me-2 lh-1"></span>
+                                            </div>
+                                            <span class="fs-6 fw-bold text-gray-400">Monthly Active Nodes
+                                                (average)</span>
+                                        </div>
+                                        <div id="monthly-node-display" class="min-h-auto" style="height: 150px"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="card-body d-flex justify-content-between flex-column px-0 pb-0">
-                        <div class="tab-content" id="node-time-stats">
-                            <div class="tab-pane fade show active" id="nodes-daily" role="tabpanel">
-                                <div class="mb-4 px-9">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <span id="daily-node-count" class="fs-2hx fw-bolder text-gray-800 me-2 lh-1"></span>
-                                    </div>
-                                    <span class="fs-6 fw-bold text-gray-400">Daily Active Nodes</span>
-                                </div>
-                                <div id="daily-node-display" class="min-h-auto" style="height: 125px"></div>
-                            </div>
-                            <div class="tab-pane fade" id="nodes-weekly" role="tabpanel">
-                                <div class="mb-4 px-9">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <span id="weekly-node-count" class="fs-2hx fw-bolder text-gray-800 me-2 lh-1"></span>
-                                    </div>
-                                    <span class="fs-6 fw-bold text-gray-400">Weekly Active Nodes (average)</span>
-                                </div>
-                                <div id="weekly-node-display" class="min-h-auto" style="height: 125px"></div>
-                            </div>
-                            <div class="tab-pane fade" id="nodes-monthly" role="tabpanel">
-                                <div class="mb-4 px-9">
-                                    <div class="d-flex align-items-center mb-2">
-                                        <span id="monthly-node-count" class="fs-2hx fw-bolder text-gray-800 me-2 lh-1"></span>
-                                    </div>
-                                    <span class="fs-6 fw-bold text-gray-400">Monthly Active Nodes (average)</span>
-                                </div>
-                                <div id="monthly-node-display" class="min-h-auto" style="height: 125px"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                     </div>
                 </div>
                 <div class="row g-5 g-lg-10">
-                    <div class="col-6">
-                        <p>Put chart here</p>
+                    <div class="col-12">
+                        <div class="card card-flush h-md-100" id="version-card">
+                            <div class="card-header pt-7">
+                                <h3 class="card-title align-items-start flex-column">
+                                    <span class="card-label fw-bolder text-dark">Versions</span>
+                                    <span class="text-gray-400 pt-2 fw-bold fs-6">Top 10 versions</span>
+                                </h3>
+                                <div class="card-toolbar"></div>
+                            </div>
+                            <div class="card-body d-flex flex-center">
+                                <div id="versions" class="min-h-auto" style="height: 150px"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-6">
+                    @*<div class="col-6">
                         <p>Put chart here</p>
-                    </div>
+                    </div>*@
                 </div>
 
             </div>

@@ -11,6 +11,11 @@
             <li class="menu-item">
                 <a asp-action="Api" asp-controller="Home" class="menu-link px-2">API</a>
             </li>
+            <li class="menu-item">
+                <small class="text-muted menu-link ms-5">Build: @System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString() 
+                    | Date: @System.IO.File.GetLastWriteTime(System.Reflection.Assembly.GetExecutingAssembly().Location).ToShortDateString()
+                </small>
+            </li>
         </ul>		
     </div>	
 </div>

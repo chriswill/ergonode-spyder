@@ -3,6 +3,7 @@
     updateWeeklyNodeCount();
     updateMonthlyNodeCount();
     getTopCountries();
+    getVersions();
 });
 
 var updateDailyNodeCount = function() {
@@ -70,7 +71,7 @@ var getTopCountries = function () {
 
     am5.ready(function () {
 
-        $.get('/api/nodes/geo-countries?count=10',
+        $.get('/api/nodes/geo/countries?count=10',
             function(data) {
                 const countries = data.data.map(x => {
                     return x.code;
@@ -172,6 +173,24 @@ var getTopCountries = function () {
             }); // end am5.ready()
 
         });
+}
+
+var getVersions = function() {
+    $.get('/api/nodes/versions', function (data) {
+        const length = data.data.length;
+
+        if (length > 0) {
+            
+            const keys = data.data.map(x => {
+                return x.key;
+            });
+            const values = data.data.map(x => {
+                return x.value;
+            });
+            var element = document.getElementById('versions');
+            initVersionChart(element, keys, values);
+        }
+    });
 }
 
 var initNodeChart = function (element, keys, values) {
@@ -306,6 +325,70 @@ var initNodeChart = function (element, keys, values) {
             strokeWidth: 2
         }
     };
+
+    var chart = new ApexCharts(element, options);
+
+    // Set timeout to properly get the parent elements width
+    setTimeout(function () {
+        chart.render();
+    }, 300);
+}
+
+var initVersionChart = function(element, keys, values) {
+    if (!element) {
+        return;
+    }
+
+    var parent = $('#version-card');
+    var width = parent.width();
+
+    var height = parseInt(KTUtil.css(element, 'height'));
+    var borderColor = KTUtil.getCssVariableValue('--bs-border-dashed-color');
+    var baseColor = KTUtil.getCssVariableValue('--bs-gray-800');
+    var lightColor = KTUtil.getCssVariableValue('--bs-light-info');
+
+
+    var options = {
+        series: values,
+        chart: {
+            height: height,
+            width: width,
+            type: 'pie'
+        },
+        plotOptions: {
+            pie: {
+                startAngle: -90,
+                endAngle: 270
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        fill: {
+            type: 'gradient'
+        },
+        labels: keys,
+        legend: {
+            formatter: function (val, opts) {
+                return val + " - " + opts.w.globals.series[opts.seriesIndex];
+            }
+        },
+        title: {
+            text: ''
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 200
+                },
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }]
+    };
+
 
     var chart = new ApexCharts(element, options);
 

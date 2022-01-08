@@ -57,7 +57,13 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '**/ErgoNodeSpyder.App.csproj'
-    arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'    
+    arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Spyder Portal Artifact'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)\ErgoNodeSpyder.Portal.zip'
+    ArtifactName: Portal
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Spyder Agent Artifact'

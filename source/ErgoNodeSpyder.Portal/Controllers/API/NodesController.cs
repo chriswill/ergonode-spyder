@@ -55,7 +55,7 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
             return Ok(response);
         }
 
-        [Route("geo-continents")]
+        [Route("geo/continents")]
         public async Task<IActionResult> Continents()
         {
             JsonApiResponse<GeoSummary> response = CreateJsonGeoApiResponse();
@@ -66,7 +66,7 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
             return Ok(response);
         }
 
-        [Route("geo-countries")]
+        [Route("geo/countries")]
         public async Task<IActionResult> Countries(int count = 5)
         {
             JsonApiResponse<GeoSummary> response = CreateJsonGeoApiResponse();
@@ -77,7 +77,7 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
             return Ok(response);
         }
 
-        [Route("geo-regions")]
+        [Route("geo/regions")]
         public async Task<IActionResult> Regions(string countryCode, int count = 5)
         {
             JsonApiResponse<GeoSummary> response = CreateJsonGeoApiResponse();
@@ -88,7 +88,7 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
             return Ok(response);
         }
 
-        [Route("geo-isps")]
+        [Route("geo/isps")]
         public async Task<IActionResult> Isps(int count = 10)
         {
             JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();

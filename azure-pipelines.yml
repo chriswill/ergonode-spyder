@@ -1,4 +1,4 @@
-name: $(MajorVersion).$(MinorVersion).$(PatchVersion).$(rev:rr)
+name: $(MajorVersion).$(MinorVersion).$(rev:rr)
 
 trigger:
 - main
@@ -40,7 +40,8 @@ steps:
 - task: VersionDotNetCoreAssemblies@2
   displayName: 'Update version'
   inputs:
-    AddDefault: true    
+    AddDefault: true
+    VersionRegex: '\d+\.\d+\.\d+'
 
 - task: DotNetCoreCLI@2
   displayName: Build

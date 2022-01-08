@@ -16,6 +16,19 @@ steps:
     packageType: 'sdk'
     version: '6.0.x'
 
+- task: Npm@1
+  displayName: Portal NPM
+  inputs:
+    command: 'install'
+    workingDir: 'source/ErgoNodeSpyder.Portal'
+
+- task: gulp@1
+  displayName: Portal Gulp
+  inputs:
+    gulpFile: 'source/ErgoNodeSpyder.Portal/gulpfile.js'
+    targets: 'release'
+    enableCodeCoverage: false
+
 - task: DotNetCoreCLI@2
   displayName: Restore app
   inputs:

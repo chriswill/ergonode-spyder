@@ -26,7 +26,7 @@
 	[ZipOrPostalCode] [varchar](25) NULL,
 	[Latitude] [numeric](18, 14) NULL,
 	[Longitude] [numeric](18, 14) NULL,
-	[ISP] [varchar](100) NULL,
+	[ISP] [varchar](150) NULL,
 	[GeoDateUpdated] [smalldatetime] NULL,
  CONSTRAINT [PK_Nodes] PRIMARY KEY CLUSTERED 
 (
@@ -65,34 +65,34 @@ CREATE TABLE [dbo].[NodesByDay](
 GO
 
 CREATE TABLE [dbo].[NodesByWeek](
-	[Week] [TINYINT] NOT NULL,
 	[Year] [INT] NOT NULL,
+	[Week] [TINYINT] NOT NULL,	
 	[NodeCount] [INT] NOT NULL,
  CONSTRAINT [PK_NodesByWeek] PRIMARY KEY CLUSTERED 
 (
-	[Week] ASC,
-	[Year] ASC
+	[Year] ASC,
+	[Week] ASC	
 )) 
 GO
 
 CREATE TABLE [dbo].[NodesByMonth](
-	[Month] [TINYINT] NOT NULL,
 	[Year] [INT] NOT NULL,
+	[Month] [TINYINT] NOT NULL,	
 	[NodeCount] [INT] NOT NULL,
  CONSTRAINT [PK_NodesByMonth] PRIMARY KEY CLUSTERED 
 (
-	[Month] ASC,
-	[Year] ASC
+	[Year] ASC,
+	[Month] ASC	
 )) 
 GO
 
 CREATE VIEW [dbo].[ActiveNodes]
 AS
 SELECT        [Address], [Port], PublicIP, AgentName, PeerName, [Version], BlocksToKeep, NiPoPoWBootstrapped, 
-			  StateType, VerifyingTransactions, PeerCount, ContinentCode, CountryCode, ContinentName, CountryName, 
+			  StateType, VerifyingTransactions, PeerCount, DateAdded, DateUpdated, ContinentCode, ContinentName, CountryCode, CountryName, 
 			  RegionCode, RegionName, City, ZipOrPostalCode, Latitude, Longitude, ISP
 FROM          dbo.Nodes
-WHERE        (DateUpdated > DATEADD(Day, - 1, GetUTCDate()))
+WHERE        (DatePeersQueried > DATEADD(Day, - 1, GetUTCDate()))
 
 GO
 
@@ -203,23 +203,99 @@ GO
 
 CREATE PROCEDURE DailyMaintenanceAndAnalytics 	
 AS
-BEGIN
-	
+BEGIN	
+
 	SET NOCOUNT ON;
 
     DELETE 
 	FROM dbo.Nodes
 	WHERE (DateUpdated is NULL OR DateUpdated < DATEADD(DAY, -4, GETUTCDATE())) AND ContactAttempts >= 5
 
-	INSERT INTO dbo.NodesByDay	([Day], [NodeCount])
-	SELECT 
+	MERGE dbo.NodesByDay as [Target]
+	USING (
+		SELECT 
 		CAST(GETUTCDATE() as date),
-	    (Select COUNT(*) FROM dbo.ActiveNodes)
-	WHERE NOT EXISTS (
-		SELECT 1 FROM dbo.NodesByDay
-		WHERE [Day] =  CAST(GETUTCDATE() as date)
+		(Select COUNT(*) FROM dbo.ActiveNodes)
+	) AS [Source]
+	( 
+		[Day], 
+		[NodeCount]		
+	) 
+	ON ([Target].[Day] = [Source].[Day])
+	WHEN MATCHED THEN
+	UPDATE 
+		SET [NodeCount] = [Source].[NodeCount]				
+	WHEN NOT MATCHED THEN
+	INSERT (
+		[Day], 
+		[NodeCount]		
 	)
+	VALUES (
+		[Source].[Day], 
+		[Source].[NodeCount]		
+	);
 
+	MERGE dbo.NodesByWeek as [Target]
+	USING (
+		SELECT 
+		DATEPART(YEAR, [Day]),
+		DATEPART(WEEK, [Day]),	
+		CAST(ROUND(AVG(NodeCount), 0) AS INT)
+		FROM dbo.NodesByDay
+		WHERE [Day] >= DATEADD(wk, 0, DATEADD(DAY, 1-DATEPART(WEEKDAY, GETUTCDATE()), DATEDIFF(dd, 0, GETUTCDATE())))
+		GROUP BY DATEPART(YEAR, [Day]), DATEPART(WEEK, [Day])
+	) AS [Source]
+	( 
+		[Year],
+		[Week],	
+		[NodeCount]		
+	) 
+	ON ([Target].[Year] = [Source].[Year] AND [Target].[Week] = [Source].[Week])
+	WHEN MATCHED THEN
+	UPDATE 
+		SET [NodeCount] = [Source].[NodeCount]				
+	WHEN NOT MATCHED THEN
+	INSERT (
+		[Year],
+		[Week],	
+		[NodeCount]		
+	)
+	VALUES (
+		[Source].[Year], 
+		[Source].[Week], 	
+		[Source].[NodeCount]		
+	);	
+
+	MERGE dbo.NodesByMonth as [Target]
+	USING (
+		SELECT 
+		DATEPART(YEAR, [Day]),
+		DATEPART(MONTH, [Day]),	
+		CAST(ROUND(AVG(NodeCount), 0) AS INT)
+		FROM dbo.NodesByDay
+		WHERE [Day] >= DATEFROMPARTS(YEAR(GETUTCDATE()),MONTH(GETUTCDATE()),1)
+		GROUP BY DATEPART(YEAR, [Day]), DATEPART(MONTH, [Day])
+	) AS [Source]
+	( 
+		[Year],
+		[Month],	
+		[NodeCount]		
+	) 
+	ON ([Target].[Year] = [Source].[Year] AND [Target].[Month] = [Source].[Month])
+	WHEN MATCHED THEN
+	UPDATE 
+		SET [NodeCount] = [Source].[NodeCount]				
+	WHEN NOT MATCHED THEN
+	INSERT (
+		[Year],
+		[Month],	
+		[NodeCount]		
+	)
+	VALUES (
+		[Source].[Year], 
+		[Source].[Month], 	
+		[Source].[NodeCount]		
+	);
 	
 END
 GO

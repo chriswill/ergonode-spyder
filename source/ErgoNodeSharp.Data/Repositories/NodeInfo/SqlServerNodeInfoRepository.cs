@@ -42,7 +42,7 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
             }
         }
 
-        //Geo location will update every two months
+        //Geo location will update every month
         public async Task<IEnumerable<string>> GetAddressesForGeoLookup(int topN = 10)
         {
             logger.LogDebug("Executing GetAddressesForGeoLookup");
@@ -129,7 +129,7 @@ WHERE
                     continentCode = response.ContinentCode,
                     continentName = response.ContinentName,
                     countryCode = response.CountryCode,
-                    countryName = response.ContinentName,
+                    countryName = response.CountryName,
                     regionCode = response.RegionCode,
                     regionName = response.RegionName,
                     city = response.City,
@@ -143,12 +143,19 @@ WHERE
 
         public async Task PerformMaintenanceAndAnalytics()
         {
-            logger.LogDebug("Executing PerformMaintenanceAndAnalytics");
+            logger.LogInformation("Executing PerformMaintenanceAndAnalytics");
             string sql = "dbo.DailyMaintenanceAndAnalytics";
 
-            using (SqlConnection connection = new SqlConnection(sql))
+            try
             {
-                await connection.ExecuteAsyncWithRetry(sql, null, null, null, CommandType.StoredProcedure);
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    await connection.ExecuteAsyncWithRetry(sql, null, null, null, CommandType.StoredProcedure);
+                }
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, e.Message);
             }
         }
 

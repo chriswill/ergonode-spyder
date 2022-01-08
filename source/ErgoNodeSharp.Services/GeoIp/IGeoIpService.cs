@@ -1,50 +1,60 @@
 ﻿using ErgoNodeSharp.Models.Configuration;
 using ErgoNodeSharp.Models.Responses;
-using Flurl.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace ErgoNodeSharp.Services.GeoIp
 {
     public interface IGeoIpService
     {
-        public Task<GeoIpResponse> GetGeoIpResponse(string address);
+        public Task<GeoIpResponse?> GetGeoIpResponse(string address);
     }
 
     public class GeoIpService : IGeoIpService
     {
         private readonly string accessKey;
         private readonly ILogger<GeoIpService> logger;
+        private readonly IHttpClientFactory httpClientFactory;
 
-        public GeoIpService(ErgoNodeSpyderConfiguration configuration, ILogger<GeoIpService> logger)
+        public GeoIpService(ErgoNodeSpyderConfiguration configuration, IHttpClientFactory httpClientFactory,
+            ILogger<GeoIpService> logger)
         {
             accessKey = configuration.IpStackPassword;
+            this.httpClientFactory = httpClientFactory;
             this.logger = logger;
         }
 
-        public async Task<GeoIpResponse> GetGeoIpResponse(string address)
+        public async Task<GeoIpResponse?> GetGeoIpResponse(string address)
         {
-            logger.LogDebug("Performing Geo API request for {0}", address);
-            try
-            {
-                GeoIpResponse response =
-                    await $"https://api.ipstack.com/{address}?access_key={accessKey}&fields=main,connection"
-                        .GetJsonAsync<GeoIpResponse>();
+            logger.LogDebug("Performing Geo API request for {Address}", address);
 
-                return response;
-            }
-            catch (FlurlHttpException ex)
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(
+                HttpMethod.Get,
+                $"https://api.ipstack.com/{address}?access_key={accessKey}&fields=main,connection")
             {
-                string errorResponse = await ex.GetResponseStringAsync();
-                logger.LogError(ex, "Error making Geo API request");
-                logger.LogError(errorResponse);
-                throw;
-            }
-            catch (Exception ex)
+                Headers =
+                {
+                    { "Accept", "*/*" },
+                    { "Accept-Encoding", "gzip, deflate, br" },
+                    { "Connection", "keep-alive" },
+                    { "User-Agent", "NodeSpyder" }
+                }
+            };
+
+            HttpClient httpClient = httpClientFactory.CreateClient();
+            HttpResponseMessage httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
+
+            if (httpResponseMessage.IsSuccessStatusCode)
             {
-                logger.LogError(ex, "Error making Geo API request");
-                throw;
+                string json = await httpResponseMessage.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<GeoIpResponse>(json);
             }
+
+            string content = await httpResponseMessage.Content.ReadAsStringAsync();
+            logger.LogError("Error making Geo API request: {StatusCode}", httpResponseMessage.StatusCode);
+            logger.LogError(content);
+
+            return null;
         }
-        
     }
 }

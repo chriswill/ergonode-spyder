@@ -39,6 +39,9 @@ namespace ErgoNodeSpyder.App
                 .UseSerilog()
                 .ConfigureServices((ctx, services) =>
                 {
+
+                    services.AddHttpClient<IGeoIpService, GeoIpService>();
+
                     var logDirectory = ctx.Configuration["LogDirectory"] ?? "logs";
 
                     // Specifying the configuration for serilog
@@ -74,7 +77,7 @@ namespace ErgoNodeSpyder.App
                         ctx.Configuration.GetConnectionString(nodeSpyderConfiguration.ConnectionStringName);
 
                     services.AddSingleton(nodeSpyderConfiguration);
-
+                    
                     switch (nodeSpyderConfiguration.DatabaseType)
                     {
                         case "MsSql":

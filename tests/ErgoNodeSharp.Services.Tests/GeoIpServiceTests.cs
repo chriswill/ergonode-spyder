@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace ErgoNodeSharp.Services.Tests
 {
-    [TestClass]
+    [TestClass, Ignore]
     public class GeoIpServiceTests
     {
         [TestMethod]

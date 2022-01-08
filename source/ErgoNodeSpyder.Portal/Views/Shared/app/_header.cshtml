@@ -29,7 +29,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex align-items-center flex-shrink-0">	
+                @*<div class="d-flex align-items-center flex-shrink-0">	
                     <div class="d-flex align-items-center ms-1">
 
                         <a href="#"
@@ -61,23 +61,24 @@
                         </div>
 
                     </div>
-                </div>
+                </div>*@
 
 			</div>
         </div>
     </div>
-    <div class="header-navs d-flex align-items-stretch flex-stack h-lg-70px w-100 py-5 py-lg-0" id="kt_header_navs"
-		data-kt-drawer="true" data-kt-drawer-name="header-menu" data-kt-drawer-activate="{default: true, lg: false}"
-		data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'200px', '300px': '250px'}"
-		data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_header_navs_toggle" data-kt-swapper="true"
-		data-kt-swapper-mode="append" data-kt-swapper-parent="{default: '#kt_body', lg: '#kt_header'}">
+    <div class="header-navs d-flex align-items-stretch flex-stack h-lg-70px w-100 py-5 py-lg-0" id="kt_header_navs">
         <div class="d-lg-flex container-xxl w-100">
             <div class="d-lg-flex flex-column justify-content-lg-center w-100" id="kt_header_navs_wrapper">
 
                 <div class="header-menu flex-column align-items-stretch flex-lg-row">
                     <div class="menu menu-lg-rounded menu-column menu-lg-row menu-state-bg menu-title-gray-700 menu-state-title-primary menu-state-icon-primary menu-state-bullet-primary menu-arrow-gray-400 fw-bold align-items-stretch flex-grow-1"
                          id="#kt_header_menu" data-kt-menu="true">
-
+                        <div class="d-flex flex-column flex-lg-row flex-lg-stack flex-wrap gap-2 px-4 px-lg-0">
+                            <div class="d-flex flex-column flex-lg-row gap-2">
+                                <a class="btn btn-sm btn-light-primary fw-bolder" asp-controller="Home" asp-action="Index">Dashboard</a>
+                                <a class="btn btn-sm btn-light-success fw-bolder" asp-action="Index" asp-controller="Geo">Geo-Analytics</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

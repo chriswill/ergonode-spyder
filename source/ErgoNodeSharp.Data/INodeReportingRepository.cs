@@ -10,9 +10,11 @@ namespace ErgoNodeSharp.Data
 
         Task<IEnumerable<StringValuePair>> GetVersionCount();
 
-        Task<IEnumerable<StringValuePair>> GetContinentCount();
+        Task<IEnumerable<GeoSummary>> GetContinentCount();
 
-        Task<IEnumerable<StringValuePair>> GetCountryCount();
+        Task<IEnumerable<GeoSummary>> GetCountryCount(int count = 5);
+
+        Task<IEnumerable<GeoSummary>> GetRegionCount(string countryCode, int count = 5);
 
         Task<IEnumerable<StringValuePair>> GetStateTypeCount();
 

@@ -67,33 +67,48 @@ SELECT [Address]
             }
         }
 
-        public async Task<IEnumerable<StringValuePair>> GetContinentCount()
+        public async Task<IEnumerable<GeoSummary>> GetContinentCount()
         {
             string sql = @"
-  Select ISNULL([ContinentName],'Unknown') as [Key], Count(*) as [Value]
+  Select ISNULL([ContinentCode],'Unknown') as [Code], ISNULL([ContinentName],'Unknown') as [Name], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
   WHERE PublicIp = 1
-  Group by [ContinentName]
+  Group by [ContinentCode], [ContinentName]
   Order by Count(*) desc
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                return await connection.QueryAsyncWithRetry<StringValuePair>(sql);
+                return await connection.QueryAsyncWithRetry<GeoSummary>(sql);
             }
         }
 
-        public async Task<IEnumerable<StringValuePair>> GetCountryCount()
+        public async Task<IEnumerable<GeoSummary>> GetCountryCount(int count = 5)
         {
-            string sql = @"
-  Select ISNULL([CountryName],'Unknown') as [Key], Count(*) as [Value]
+            string sql = @$"
+  Select TOP({count}) ISNULL([CountryCode],'Unknown') as [Code], ISNULL([CountryName],'Unknown') as [Name], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
   WHERE PublicIp = 1
-  Group by [CountryName]
+  Group by [CountryCode], [CountryName]
   Order by Count(*) desc
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                return await connection.QueryAsyncWithRetry<StringValuePair>(sql);
+                return await connection.QueryAsyncWithRetry<GeoSummary>(sql);
+            }
+        }
+
+        public async Task<IEnumerable<GeoSummary>> GetRegionCount(string countryCode, int count = 5)
+        {
+            string sql = @$"
+  Select TOP({count}) ISNULL([RegionCode],'Unknown') as [Code], ISNULL([RegionName],'Unknown') as [Name], Count(*) as [Value]
+  FROM [dbo].[ActiveNodes] WITH (NOLOCK)
+  WHERE PublicIp = 1 AND CountryCode = @countryCode
+  Group by [RegionCode], [RegionName]
+  Order by Count(*) desc
+";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.QueryAsyncWithRetry<GeoSummary>(sql, countryCode);
             }
         }
 

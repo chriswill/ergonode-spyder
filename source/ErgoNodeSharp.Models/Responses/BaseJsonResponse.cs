@@ -57,7 +57,7 @@ namespace ErgoNodeSharp.Models.Responses
 
         public Meta()
         {
-            Authors = new List<string> { "Ergo Node Spyder Authors" };
+            Authors = new List<string> { "NodeSpyder Authors" };
         }
     }
 

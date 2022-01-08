@@ -58,7 +58,7 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
         [Route("geo-continents")]
         public async Task<IActionResult> Continents()
         {
-            JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
+            JsonApiResponse<GeoSummary> response = CreateJsonGeoApiResponse();
 
             response.Data = await repository.GetContinentCount();
             response.Meta.TotalRecords = response.Data.Count();
@@ -67,11 +67,22 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
         }
 
         [Route("geo-countries")]
-        public async Task<IActionResult> Countries()
+        public async Task<IActionResult> Countries(int count = 5)
         {
-            JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
+            JsonApiResponse<GeoSummary> response = CreateJsonGeoApiResponse();
 
-            response.Data = await repository.GetCountryCount();
+            response.Data = await repository.GetCountryCount(count);
+            response.Meta.TotalRecords = response.Data.Count();
+
+            return Ok(response);
+        }
+
+        [Route("geo-regions")]
+        public async Task<IActionResult> Regions(string countryCode, int count = 5)
+        {
+            JsonApiResponse<GeoSummary> response = CreateJsonGeoApiResponse();
+
+            response.Data = await repository.GetRegionCount(countryCode, count);
             response.Meta.TotalRecords = response.Data.Count();
 
             return Ok(response);
@@ -153,6 +164,18 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
         private JsonApiResponse<StringValuePair> CreateJsonApiResponse()
         {
             JsonApiResponse<StringValuePair> response = new JsonApiResponse<StringValuePair>();
+            if (httpContextAccessor.HttpContext == null) return response;
+
+            logger.LogDebug("Received GetNodeInfos request from " + httpContextAccessor.HttpContext.Request.Host);
+            response.Links.First = httpContextAccessor.HttpContext.Request.GetEncodedUrl();
+            response.Links.Self = httpContextAccessor.HttpContext.Request.GetEncodedUrl();
+
+            return response;
+        }
+
+        private JsonApiResponse<GeoSummary> CreateJsonGeoApiResponse()
+        {
+            JsonApiResponse<GeoSummary> response = new JsonApiResponse<GeoSummary>();
             if (httpContextAccessor.HttpContext == null) return response;
 
             logger.LogDebug("Received GetNodeInfos request from " + httpContextAccessor.HttpContext.Request.Host);

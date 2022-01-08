@@ -108,7 +108,7 @@ SELECT [Address]
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                return await connection.QueryAsyncWithRetry<GeoSummary>(sql, countryCode);
+                return await connection.QueryAsyncWithRetry<GeoSummary>(sql, new {countryCode});
             }
         }
 

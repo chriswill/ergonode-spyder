@@ -15,7 +15,7 @@
                                     <ul class="nav nav-tabs nav-line-tabs nav-stretch fs-6 border-0">
                                         <li class="nav-item">
                                             <a class="nav-link active" data-bs-toggle="tab"
-                                                href="#nodes-daily">Daily</a>
+                                               href="#nodes-daily">Daily</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" data-bs-toggle="tab" href="#nodes-weekly">Weekly</a>
@@ -32,7 +32,7 @@
                                         <div class="mb-4 px-9">
                                             <div class="d-flex align-items-center mb-2">
                                                 <span id="daily-node-count"
-                                                    class="fs-2hx fw-bolder text-gray-800 me-2 lh-1"></span>
+                                                      class="fs-2hx fw-bolder text-gray-800 me-2 lh-1"></span>
                                             </div>
                                             <span class="fs-6 fw-bold text-gray-400">Daily Active Nodes</span>
                                         </div>
@@ -42,7 +42,7 @@
                                         <div class="mb-4 px-9">
                                             <div class="d-flex align-items-center mb-2">
                                                 <span id="weekly-node-count"
-                                                    class="fs-2hx fw-bolder text-gray-800 me-2 lh-1"></span>
+                                                      class="fs-2hx fw-bolder text-gray-800 me-2 lh-1"></span>
                                             </div>
                                             <span class="fs-6 fw-bold text-gray-400">Weekly Active Nodes
                                                 (average)</span>
@@ -53,7 +53,7 @@
                                         <div class="mb-4 px-9">
                                             <div class="d-flex align-items-center mb-2">
                                                 <span id="monthly-node-count"
-                                                    class="fs-2hx fw-bolder text-gray-800 me-2 lh-1"></span>
+                                                      class="fs-2hx fw-bolder text-gray-800 me-2 lh-1"></span>
                                             </div>
                                             <span class="fs-6 fw-bold text-gray-400">Monthly Active Nodes
                                                 (average)</span>
@@ -80,9 +80,6 @@
                             </div>
                         </div>
                     </div>
-                    @*<div class="col-6">
-                        <p>Put chart here</p>
-                    </div>*@
                 </div>
 
             </div>
@@ -101,6 +98,71 @@
                 </div>
             </div>
         </div>
+        <div class="row gy-5 g-xl-10">
+            <div class="col-md-4 col-xl-4 mb-md-5 mb-xxl-10">
+                <div class="card card-flush mb-lg-10">
+                    <div class="card-header pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <span class="card-label fw-bolder text-dark">Verification</span>
+                            <span class="text-gray-400 pt-2 fw-bold fs-6">Node configuration</span>
+                        </h3>
+                    </div>
+                    <div class="card-body d-flex align-items-end pt-10">
+                        <div class="d-flex align-items-center flex-column mt-3 w-100">
+                            <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                <span class="fw-boldest fs-6 text-dark">Verifying</span>
+                                <span id="verification-display" class="fw-bolder fs-6 text-gray-400">100%</span>
+                            </div>
+                            <div class="h-8px mx-3 w-100 bg-light-success rounded">
+                                <div id="verification-ruler" class="bg-success rounded h-8px" role="progressbar" style="width: 100%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-xl-4 mb-md-5 mb-xxl-10">
+                <div class="card card-flush mb-lg-10">
+                    <div class="card-header pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <span class="card-label fw-bolder text-dark">State type</span>
+                            <span class="text-gray-400 pt-2 fw-bold fs-6">Node configuration</span>
+                        </h3>
+                    </div>
+                    <div class="card-body d-flex align-items-end pt-10">
+                        <div class="d-flex align-items-center flex-column mt-3 w-100">
+                            <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                <span class="fw-boldest fs-6 text-dark">UTXO</span>
+                                <span id="state-display" class="fw-bolder fs-6 text-gray-400">100%</span>
+                            </div>
+                            <div class="h-8px mx-3 w-100 bg-light-success rounded">
+                                <div id="state-ruler" class="bg-success rounded h-8px" role="progressbar" style="width: 100%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-xl-4 mb-md-5 mb-xxl-10">
+                <div class="card card-flush mb-lg-10">
+                    <div class="card-header pt-5">
+                        <h3 class="card-title align-items-start flex-column">
+                            <span class="card-label fw-bolder text-dark">Blocks to keep</span>
+                            <span class="text-gray-400 pt-2 fw-bold fs-6">Node configuration</span>
+                        </h3>
+                    </div>
+                    <div class="card-body d-flex align-items-end pt-10">
+                        <div class="d-flex align-items-center flex-column mt-3 w-100">
+                            <div class="d-flex justify-content-between w-100 mt-auto mb-2">
+                                <span class="fw-boldest fs-6 text-dark">All</span>
+                                <span id="blocks-display" class="fw-bolder fs-6 text-gray-400">100%</span>
+                            </div>
+                            <div class="h-8px mx-3 w-100 bg-light-success rounded">
+                                <div id="blocks-ruler" class="bg-success rounded h-8px" role="progressbar" style="width: 100%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -108,7 +170,6 @@
     <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
     <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
     <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
-    <script src="https://cdn.amcharts.com/lib/5/geodata/usaLow.js"></script>
     <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
     <script type="text/javascript" src="~/js/pages/home.js"></script>
 }

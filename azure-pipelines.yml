@@ -74,7 +74,7 @@ steps:
     arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)'
 
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish Spyder Portal Artifact'
+  displayName: 'Publish Web Portal'
   inputs:
     PathtoPublish: '$(build.artifactstagingdirectory)\ErgoNodeSpyder.Portal.zip'
     ArtifactName: Portal

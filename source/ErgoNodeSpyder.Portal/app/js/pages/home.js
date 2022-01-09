@@ -4,6 +4,9 @@
     updateMonthlyNodeCount();
     getTopCountries();
     getVersions();
+    updateVerifications();
+    updateStateType();
+    updateBlocks();
 });
 
 var updateDailyNodeCount = function() {
@@ -396,5 +399,78 @@ var initVersionChart = function(element, keys, values) {
     setTimeout(function () {
         chart.render();
     }, 300);
+}
+
+var sumArray = function(arrayVals) {
+    let sum = 0;
+
+    for (let i = 0; i < arrayVals.length; i++) {
+        sum += arrayVals[i];
+    }
+
+    return sum;
+}
+
+var updateVerifications = function() {
+    $.get('/api/nodes/verifying', function (data) {
+        const length = data.data.length;
+
+        if (length > 0) {
+            const values = data.data.map(x => {
+                return x.value;
+            });
+            
+            const topValue = data.data[0].value;
+            const percentage = (topValue * 100) / sumArray(values);
+            
+            const element = document.getElementById('verification-display');
+            element.innerText = percentage + '%';
+
+            const ruler = document.getElementById('verification-ruler');
+            ruler.style.width = percentage + '%';
+        }
+    });
+}
+
+var updateStateType = function() {
+    $.get('/api/nodes/state-types', function (data) {
+        const length = data.data.length;
+
+        if (length > 0) {
+            const values = data.data.map(x => {
+                return x.value;
+            });
+
+            const topValue = data.data[0].value;
+            const percentage = (topValue * 100) / sumArray(values);
+
+            const element = document.getElementById('state-display');
+            element.innerText = percentage + '%';
+
+            const ruler = document.getElementById('state-ruler');
+            ruler.style.width = percentage + '%';
+        }
+    });
+}
+
+var updateBlocks = function() {
+    $.get('/api/nodes/blocks-kept', function (data) {
+        const length = data.data.length;
+
+        if (length > 0) {
+            const values = data.data.map(x => {
+                return x.value;
+            });
+
+            const topValue = data.data[0].value;
+            const percentage = (topValue * 100) / sumArray(values);
+
+            const element = document.getElementById('blocks-display');
+            element.innerText = percentage + '%';
+
+            const ruler = document.getElementById('blocks-ruler');
+            ruler.style.width = percentage + '%';
+        }
+    });
 }
 

@@ -140,6 +140,20 @@ SELECT [Address]
             }
         }
 
+        public async Task<IEnumerable<StringValuePair>> GetBlocksKeptCount()
+        {
+            string sql = @"
+  Select [VerifyingTransactions] as [Key], Count(*) as [Value]
+  FROM [dbo].[ActiveNodes] WITH (NOLOCK)
+  Group by [VerifyingTransactions]
+  Order by Count(*) desc
+";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.QueryAsyncWithRetry<StringValuePair>(sql);
+            }
+        }
+
         public async Task<IEnumerable<StringValuePair>> GetIspCount(int count = 10)
         {
             string sql = @$"

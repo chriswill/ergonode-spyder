@@ -1,5 +1,49 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "About";
 }
+<div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl">
+    <div class="content flex-row-fluid" id="kt_content">
+        <div class="row gy-5 g-xl-10">
+            <div class="col-md-12 col-xl-12 mb-md-5 mb-xxl-10">
+                <div class="card overflow-hidden mb-5 mb-lg-10">
+                    <div class="card-header card-header-stretch">
+                        <h2 class="card-title">About Node Spyder for Ergo</h2>
+                    </div>
+                    <div class="card-body p-9">
+                        <h4>What is it?</h4>
+                        <p>Node Spyder is an application that creates a catalog of all accessible Ergo nodes. <a href="https://github.com/ergoplatform/ergo">Nodes</a> are the applications that
+                            work together to secure the Ergo network by recording completed blocks and transactions.
+                        </p>
+                        <p>Node Spyder communicates with each accessible node, gathering configuration and other information so that it can report on the
+                            makeup, size and health of the Ergo network.
+                        </p>
+                        <h4>How does it work?</h4>
+                        <p>Node Spyder is a server-based application that attempts to contact each Ergo node once every 24 hours.</p>
+                        <p>Using the <a href="https://github.com/ergoplatform/ergo/wiki/P2P-Protocol">P2P message-based protocol</a> used by Ergo nodes, Node Spyder handshakes with an Ergo node and then requests a list
+                            of nodes that this node is connected with, also known as it's Peer List. Using the list of new nodes, it then repeats the process by connecting to each new node and requesting it's peers until each discovered node has been contacted.</p>
+                        <h4>What is an 'accessible node'?</h4>
+                        <p>An accessible node is an Ergo node that operates on a public IP address and responds to a handshake and peer request. This node is included in our data set we use for reporting.</p>
+                        <p>There are other nodes that are not included in our analysis:</p>
+                        <ul>
+                            <li>Nodes behind private IP addresses</li>
+                            <li>Nodes which do not respond to a handshake request</li>
+                        </ul>
+                        <h6>Private IP addresses</h6>
+                        <p>Nodes on the Ergo network are not required to be publicly accessible, on a public IP address. Nodes on private IP addresses
+                            may be behind a corporate firewall, or on a home network. They make outbound connections to the Ergo network, but receive and
+                            process blocks and transactions like any other node.
+                        </p>
+                        <p>However, because we can't initiate a connection to these nodes, we can't request their configuration and other information that we
+                            need to produce our reports.
+                        </p>
+                        <h6>Non-responsive nodes</h6>
+                        <p>Sometimes we get information about a node from a node's peer list, and when we attempt to contact it, it does not respond to the handshake.</p>
+                        <p>In some cases, nodes can remain on a peer list long after they are no longer operating or have changed their IP address. In any case, nodes that
+                            can't be contacted to be verified do not appear on our reports.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -20,6 +20,8 @@ namespace ErgoNodeSharp.Data
 
         Task<IEnumerable<BoolValuePair>> GetVerifyingCount();
 
+        Task<IEnumerable<StringValuePair>> GetBlocksKeptCount();
+
         Task<IEnumerable<StringValuePair>> GetIspCount(int count = 10);
 
         Task<IEnumerable<StringValuePair>> GetDailyCount(int days = 10);

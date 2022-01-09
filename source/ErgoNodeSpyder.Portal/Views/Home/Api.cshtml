@@ -1,5 +1,50 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Dashboard";
 }
+<div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl">
+    <div class="content flex-row-fluid" id="kt_content">
+        <div class="row gy-5 g-xl-10">
+            <div class="col-md-12 col-xl-12 mb-md-5 mb-xxl-10">
+                <div class="card overflow-hidden mb-5 mb-lg-10">
+                    <div class="card-header card-header-stretch">
+                        <h2 class="card-title">Node Spyder API</h2>
+                    </div>
+                    <div class="card-body p-9">
+                        <h4>What does the API provide?</h4>
+                        <p>The API provides access to all of the data collected by the Node Spyder for Ergo and used in the reports
+                            on this web site. You can download data for your own analysis or to create your own reports.
+                        </p>
+                        <p>The data is freely available and can be used for any purpose, but we ask that you cite <strong>https://ergo.nodespyder.io</strong>  
+                            as the source.</p>
+                        <p>The data available through the API only changes once per day, so there is no need to frequently query any
+                            of the API endpoints. If you use this data in online reports, please cache it on your own web site. This
+                            will help us avoid the need to implement any rate limits in the future.
+                        </p>
+                        <p>
+                            The base url for the API is https://ergo.nodespyder.io/api/nodes
+                        </p>
+                        <h4>Postman</h4>
+                        <p>
+                            You can download a <a href="https://www.postman.com">Postman</a> collection <a href="/NodeSpyder.postman_collection.json">here</a>.
+                        </p>
+                        <h4>API endpoints</h4>
+                        <ul>
+                            <li>Nodes</li>
+                            <li>Versions</li>
+                            <li>State types</li>
+                            <li>Verifying</li>
+                            <li>Blocks kept</li>
+                            <li>Continents</li>
+                            <li>Countries</li>
+                            <li>Regions</li>
+                            <li>ISPs</li>
+                            <li>Daily node count</li>
+                            <li>Weekly node count</li>
+                            <li>Monthly node count</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

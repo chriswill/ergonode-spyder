@@ -7,9 +7,7 @@ namespace ErgoNodeSharp.Models.Responses.NodeSpyder
         public string Address { get; set; }
 
         public int Port { get; set; }
-
-        public bool PublicIp { get; set; }
-
+        
         public string AgentName { get; set; }
 
         public string PeerName { get; set; }

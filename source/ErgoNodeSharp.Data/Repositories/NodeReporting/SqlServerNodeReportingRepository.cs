@@ -24,8 +24,7 @@ namespace ErgoNodeSharp.Data.Repositories.NodeReporting
         {
             string sql = @"
 SELECT [Address]
-      ,[Port]
-      ,[PublicIP]
+      ,[Port]      
       ,[AgentName]
       ,[PeerName]
       ,[Version]
@@ -34,6 +33,8 @@ SELECT [Address]
       ,[StateType]
       ,[VerifyingTransactions]
       ,[PeerCount]
+      ,[DateAdded]
+      ,[DateUpdated]
       ,[ContinentCode]
       ,[CountryCode]
       ,[ContinentName]
@@ -143,9 +144,9 @@ SELECT [Address]
         public async Task<IEnumerable<StringValuePair>> GetBlocksKeptCount()
         {
             string sql = @"
-  Select [VerifyingTransactions] as [Key], Count(*) as [Value]
+  Select Cast([BlocksToKeep] as [varchar](10)) as [Key], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
-  Group by [VerifyingTransactions]
+  Group by [BlocksToKeep]
   Order by Count(*) desc
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -196,7 +197,7 @@ SELECT [Address]
         public async Task<IEnumerable<StringValuePair>> GetWeekCount(int weeks = 12)
         {
             string sql = @$"
-  Select TOP({weeks}) (Cast([Week] as varchar) + '-' + Cast([Year] as varchar)) as [Key], NodeCount as [Value]
+  Select TOP({weeks}) CONVERT([varchar], DATEADD(wk, DATEDIFF(wk, 6, DATEFROMPARTS([Year], 1, 1)) + ([Week]-1), 6),23) as [Key], NodeCount as [Value]
   FROM [dbo].[NodesByWeek] WITH (NOLOCK)  
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))

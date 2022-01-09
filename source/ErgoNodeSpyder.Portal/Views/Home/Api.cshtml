@@ -17,12 +17,12 @@
                         <p>The data is freely available and can be used for any purpose, but we ask that you cite <strong>https://ergo.nodespyder.io</strong>  
                             as the source.</p>
                         <p>The data available through the API only changes once per day, so there is no need to frequently query any
-                            of the API endpoints. If you use this data in online reports, please cache it on your own web site. This
+                            of the API endpoints. If you use this data in online reports, please try to cache it on your own web site. This
                             will help us avoid the need to implement any rate limits in the future.
                         </p>
                         <h4>Base URL</h4>
                         <p>
-                            The base url for the API is https://ergo.nodespyder.io/api/nodes
+                            The base url for the API is https://ergo.nodespyder.io/api/nodes.  All endpoints use GET requests.
                         </p>
                         <h4>Response format</h4>
                         <p>The content type of the response for all endpoints is application/json</p>
@@ -86,20 +86,20 @@
                         </p>
                         <h6>Fields</h6>
                         <ul>
-                            <li>Address: The IP address of the node</li>
-                            <li>Port: The port that the node is operating on. The default port on mainnet is 9030.</li>
-                            <li>AgentName: The agent name reported by the node. The default is 'ergoref'.</li>
-                            <li>PeerName: The peer name reported by the node.</li>
-                            <li>Version: The software version the node is operating.</li>
-                            <li>BlocksToKeep: The number of blocks that the node is maintaining. A value of -1 means all blocks.</li>
-                            <li>NiPoPoWBootstrapped: Whether the node is <a href="https://ergoplatform.org/en/blog/2021-07-19-mining-in-logarithmic-space-nipopow-power-and-ergo/">NiPoPoW bootstrapped</a></li>
-                            <li>StateType: Either Utxo or digest</li>
-                            <li>VerifyingTransactions: Whether the node is verifying transactions</li>
-                            <li>PeerCount: The number of peers that the node is connected to</li>
-                            <li>DateAdded: The date that the node was first found by Node Spyder</li>
-                            <li>DateUpdated: The date the node was last contacted</li>
-                            <li>ContinentCode: The continent code where the node is operating</li>
-                            <li>ContinentName: The continent name where the node is operating</li>
+                            <li><strong>Address:</strong> The IP address of the node</li>
+                            <li><strong>Port:</strong> The port that the node is operating on. The default port on mainnet is 9030.</li>
+                            <li><strong>AgentName:</strong> The agent name reported by the node. The default is 'ergoref'.</li>
+                            <li><strong>PeerName:</strong> The peer name reported by the node.</li>
+                            <li><strong>Version:</strong> The software version the node is operating.</li>
+                            <li><strong>BlocksToKeep:</strong> The number of blocks that the node is maintaining. A value of -1 means all blocks.</li>
+                            <li><strong>NiPoPoWBootstrapped:</strong> Whether the node is <a href="https://ergoplatform.org/en/blog/2021-07-19-mining-in-logarithmic-space-nipopow-power-and-ergo/">NiPoPoW bootstrapped</a></li>
+                            <li><strong>StateType:</strong> Either Utxo or digest</li>
+                            <li><strong>VerifyingTransactions:</strong> Whether the node is verifying transactions</li>
+                            <li><strong>PeerCount:</strong> The number of peers that the node is connected to</li>
+                            <li><strong>DateAdded:</strong> The date that the node was first found by Node Spyder</li>
+                            <li><strong>DateUpdated:</strong> The date the node was last contacted</li>
+                            <li><strong>ContinentCode:</strong> The continent code where the node is operating</li>
+                            <li><strong>ContinentName:</strong> The continent name where the node is operating</li>
                         </ul>
                         <h5 id="versions">Versions</h5>
                         <h5 id="state-types">State types</h5>

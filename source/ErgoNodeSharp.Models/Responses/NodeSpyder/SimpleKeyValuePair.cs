@@ -16,4 +16,9 @@
     {
 
     }
+
+    public class IntValuePair : SimpleKeyValuePair<int>
+    {
+
+    }
 }

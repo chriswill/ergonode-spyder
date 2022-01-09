@@ -50,12 +50,12 @@
 			"response": []
 		},
 		{
-			"name": "Continents",
+			"name": "State types",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://ergo.nodespyder.io/api/nodes/geo-continents",
+					"raw": "https://ergo.nodespyder.io/api/nodes/state-types",
 					"protocol": "https",
 					"host": [
 						"ergo",
@@ -65,7 +65,74 @@
 					"path": [
 						"api",
 						"nodes",
-						"geo-continents"
+						"state-types"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Verifying",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://ergo.nodespyder.io/api/nodes/verifying",
+					"protocol": "https",
+					"host": [
+						"ergo",
+						"nodespyder",
+						"io"
+					],
+					"path": [
+						"api",
+						"nodes",
+						"verifying"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Blocks kept",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://ergo.nodespyder.io/api/nodes/blocks-kept",
+					"protocol": "https",
+					"host": [
+						"ergo",
+						"nodespyder",
+						"io"
+					],
+					"path": [
+						"api",
+						"nodes",
+						"blocks-kept"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Continents",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://ergo.nodespyder.io/api/nodes/geo/continents",
+					"protocol": "https",
+					"host": [
+						"ergo",
+						"nodespyder",
+						"io"
+					],
+					"path": [
+						"api",
+						"nodes",
+						"geo",
+						"continents"
 					]
 				}
 			},
@@ -163,56 +230,12 @@
 			"response": []
 		},
 		{
-			"name": "State types",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "https://ergo.nodespyder.io/api/nodes/state-types",
-					"protocol": "https",
-					"host": [
-						"ergo",
-						"nodespyder",
-						"io"
-					],
-					"path": [
-						"api",
-						"nodes",
-						"state-types"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Verifying",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "https://ergo.nodespyder.io/api/nodes/verifying",
-					"protocol": "https",
-					"host": [
-						"ergo",
-						"nodespyder",
-						"io"
-					],
-					"path": [
-						"api",
-						"nodes",
-						"verifying"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Daily node count",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://ergo.nodespyder.io/api/nodes/daily-count?days=10",
+					"raw": "https://ergo.nodespyder.io/api/nodes/daily-count?count=10",
 					"protocol": "https",
 					"host": [
 						"ergo",
@@ -226,7 +249,7 @@
 					],
 					"query": [
 						{
-							"key": "days",
+							"key": "count",
 							"value": "10"
 						}
 					]
@@ -240,7 +263,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://ergo.nodespyder.io/api/nodes/weekly-count?weeks=12",
+					"raw": "https://ergo.nodespyder.io/api/nodes/weekly-count?count=12",
 					"protocol": "https",
 					"host": [
 						"ergo",
@@ -254,7 +277,7 @@
 					],
 					"query": [
 						{
-							"key": "weeks",
+							"key": "count",
 							"value": "12"
 						}
 					]
@@ -268,7 +291,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://ergo.nodespyder.io/api/nodes/monthly-count?months=6",
+					"raw": "https://ergo.nodespyder.io/api/nodes/monthly-count?count=6",
 					"protocol": "https",
 					"host": [
 						"ergo",
@@ -282,7 +305,7 @@
 					],
 					"query": [
 						{
-							"key": "months",
+							"key": "count",
 							"value": "6"
 						}
 					]

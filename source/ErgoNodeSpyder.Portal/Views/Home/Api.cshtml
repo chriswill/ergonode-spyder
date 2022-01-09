@@ -16,18 +16,33 @@
                         </p>
                         <p>The data is freely available and can be used for any purpose, but we ask that you cite <strong>https://ergo.nodespyder.io</strong>  
                             as the source.</p>
-                        <p>The data available through the API only changes once per day, so there is no need to frequently query any
-                            of the API endpoints. If you use this data in online reports, please try to cache it on your own web site. This
-                            will help us avoid the need to implement any rate limits in the future.
-                        </p>
+                    <p>The data available through the API only changes once per day, so there is no need to frequently query any
+                        of the API endpoints. If you use this data in online reports, please try to cache it on your own web site. This
+                        will help us avoid the need to implement any rate limits in the future.
+                    </p>
+                    <h4>API endpoints</h4>
+                    <ul>
+                        <li><a href="#nodes">Nodes</a></li>
+                        <li><a href="#versions">Versions</a></li>
+                        <li><a href="#state-types">State types</a></li>
+                        <li><a href="#verifying">Verifying</a></li>
+                        <li><a href="#blocks-kept">Blocks kept</a></li>
+                        <li><a href="#continents">Continents</a></li>
+                        <li><a href="#countries">Countries</a></li>
+                        <li><a href="#regions">Regions</a></li>
+                        <li><a href="#isps">ISPs</a></li>
+                        <li><a href="#daily-count">Daily node count</a></li>
+                        <li><a href="#weekly-count">Weekly node count</a></li>
+                        <li><a href="#monthly-count">Monthly node count</a></li>
+                    </ul>
                         <h4>Base URL</h4>
                         <p>
                             The base url for the API is https://ergo.nodespyder.io/api/nodes.  All endpoints use GET requests.
                         </p>
                         <h4>Response format</h4>
                         <p>The content type of the response for all endpoints is application/json</p>
-                        <p>The json document follows the <a href="https://jsonapi.org/">json api specification</a>. The jsonapi, meta, and links
-                            sections provide information about the document. The document payload will be found in the data section.</p>
+                        <p>The json document follows the <a href="https://jsonapi.org/">json api specification</a>. The <strong>jsonapi</strong>, <strong>meta</strong>, and <strong>links</strong>
+                            sections provide information about the document. The document payload will be found in the <strong>data</strong> section.</p>
 <pre>
 <code>
 {
@@ -65,53 +80,288 @@
                         <p>
                             You can download a <a href="https://www.postman.com">Postman</a> collection <a href="/NodeSpyder.postman_collection.json">here</a>.
                         </p>
-                        <h4>API endpoints</h4>
-                        <ul>
-                            <li><a href="#nodes">Nodes</a></li>
-                            <li><a href="#versions">Versions</a></li>
-                            <li><a href="#state-types">State types</a></li>
-                            <li><a href="#verifying">Verifying</a></li>
-                            <li><a href="#blocks-kept">Blocks kept</a></li>
-                            <li><a href="#continents">Continents</a></li>
-                            <li><a href="#countries">Countries</a></li>
-                            <li><a href="#regions">Regions</a></li>
-                            <li><a href="#isps">ISPs</a></li>
-                            <li><a href="#daily-count">Daily node count</a></li>
-                            <li><a href="#weekly-count">Weekly node count</a></li>
-                            <li><a href="#monthly-count">Monthly node count</a></li>
-                        </ul>
+
                         <h5 id="nodes">Nodes</h5>
                         <p>The Nodes endpoint provides the complete list of all Ergo nodes. Currently no paging is required, but paging may be added
                             if the number of Ergo nodes grows to over 100.
                         </p>
-                        <h6>Fields</h6>
+                        <h6>Request</h6>
+                        <code>
+                            GET /api/nodes/node-infos
+                        </code>
+                        <h6 class="mt-3">Response</h6>
+                        <p>The data element in the jsonapi document will be an array of nodeInfo objects.</p>
+                        <p>The following fields appear in the nodeInfo object</p>
                         <ul>
-                            <li><strong>Address:</strong> The IP address of the node</li>
-                            <li><strong>Port:</strong> The port that the node is operating on. The default port on mainnet is 9030.</li>
-                            <li><strong>AgentName:</strong> The agent name reported by the node. The default is 'ergoref'.</li>
-                            <li><strong>PeerName:</strong> The peer name reported by the node.</li>
-                            <li><strong>Version:</strong> The software version the node is operating.</li>
-                            <li><strong>BlocksToKeep:</strong> The number of blocks that the node is maintaining. A value of -1 means all blocks.</li>
-                            <li><strong>NiPoPoWBootstrapped:</strong> Whether the node is <a href="https://ergoplatform.org/en/blog/2021-07-19-mining-in-logarithmic-space-nipopow-power-and-ergo/">NiPoPoW bootstrapped</a></li>
-                            <li><strong>StateType:</strong> Either Utxo or digest</li>
-                            <li><strong>VerifyingTransactions:</strong> Whether the node is verifying transactions</li>
-                            <li><strong>PeerCount:</strong> The number of peers that the node is connected to</li>
-                            <li><strong>DateAdded:</strong> The date that the node was first found by Node Spyder</li>
-                            <li><strong>DateUpdated:</strong> The date the node was last contacted</li>
-                            <li><strong>ContinentCode:</strong> The continent code where the node is operating</li>
-                            <li><strong>ContinentName:</strong> The continent name where the node is operating</li>
+                            <li><strong>address:</strong> The IP address of the node</li>
+                            <li><strong>port:</strong> The port that the node is operating on. The default port on mainnet is 9030.</li>
+                            <li><strong>agentName:</strong> The agent name reported by the node. The default is 'ergoref'.</li>
+                            <li><strong>peerName:</strong> The peer name reported by the node.</li>
+                            <li><strong>version:</strong> The software version the node is operating.</li>
+                            <li><strong>blocksToKeep:</strong> The number of blocks that the node is maintaining. A value of -1 means all blocks.</li>
+                            <li><strong>niPoPoWBootstrapped:</strong> Whether the node is <a href="https://ergoplatform.org/en/blog/2021-07-19-mining-in-logarithmic-space-nipopow-power-and-ergo/">NiPoPoW bootstrapped</a></li>
+                            <li><strong>stateType:</strong> Either Utxo or digest</li>
+                            <li><strong>verifyingTransactions:</strong> Whether the node is verifying transactions</li>
+                            <li><strong>peerCount:</strong> The number of peers that the node is connected to</li>
+                            <li><strong>dateAdded:</strong> The date that the node was first found by Node Spyder</li>
+                            <li><strong>dateUpdated:</strong> The date the node was last contacted</li>
+                            <li><strong>continentCode:</strong> The continent code where the node is operating</li>
+                            <li><strong>continentName:</strong> The continent name where the node is operating</li>
+                            <li><strong>countryCode:</strong> The country code where the node is operating</li>
+                            <li><strong>countryName:</strong> The country name where the node is operating</li>
+                            <li><strong>regionCode:</strong> The region code where the node is operating</li>
+                            <li><strong>regionName:</strong> The region name where the node is operating</li>
+                            <li><strong>city:</strong> The city where the node is operating</li>
+                            <li><strong>zipOrPostalCode:</strong> The zip code or postal code where the node is operating</li>
+                            <li><strong>latitude:</strong> The latitude where the node is operating</li>
+                            <li><strong>longitude:</strong> The longitude where the node is operating</li>
+                            <li><strong>isp:</strong> The ISP that operates the server for the node</li>
                         </ul>
+                        <h6>NodeInfo Sample</h6>
+<pre><code>
+{
+    "address": "135.125.235.154",
+    "port": 9030,
+    "agentName": "ergoref",
+    "peerName": "ergo-mainnet-4.0.19",
+    "version": "4.0.19",
+    "blocksToKeep": -1,
+    "niPoPoWBootstrapped": false,
+    "stateType": "Utxo",
+    "verifyingTransactions": true,
+    "peerCount": 64,
+    "dateAdded": "2022-01-01T18:45:00",
+    "dateUpdated": "2022-01-09T17:13:00",
+    "continentCode": "EU",
+    "continentName": "Europe",
+    "countryCode": "DE",
+    "countryName": "Germany",
+    "regionCode": "SL",
+    "regionName": "SL",
+    "city": "Saarbrücken",
+    "zipOrPostalCode": "66123",
+    "latitude": 49.23329925537109,
+    "longitude": 7.0,
+    "isp": "Ovh Sas"
+}
+</code></pre>
                         <h5 id="versions">Versions</h5>
+                        <p>The versions endpoint provides an ordered list of Ergo node versions and the number of nodes using each version.</p>
+                        <h6>Request</h6>
+                        <code>GET /api/nodes/versions</code>
+                        <h6 class="mt-3">Response</h6>
+                        <p>The data element in the jsonapi document will be an array of key value pairs.</p>
+                        <p>The following fields appear in the key value pair:</p>
+                        <ul>
+                            <li><strong>key:</strong> The Ergo version number</li>
+                            <li><strong>value:</strong> The number of nodes currently operating that version</li>
+                        </ul>
+                        <h6>Sample</h6>
+                        <pre><code>
+{
+    "key": "4.0.19",
+    "value": 44
+}
+</code></pre>
                         <h5 id="state-types">State types</h5>
+                    <p>The State types endpoint provides an ordered list of Ergo node state type configurations and the number of nodes 
+                        using each state type configuration. A state type is either 'Utxo' or 'Digest'.
+                        </p>
+                        <h6>Request</h6>
+                        <code>GET /api/nodes/state-types</code>
+                        <h6 class="mt-3">Response</h6>
+                        <p>The data element in the jsonapi document will be an array of key value pairs.</p>
+                        <p>The following fields appear in the key value pair:</p>
+                        <ul>
+                            <li><strong>key:</strong> The state type</li>
+                            <li><strong>value:</strong> The number of nodes currently operating that state type configuration</li>
+                        </ul>
+                        <h6>Sample</h6>
+                        <pre><code>
+{
+    "key": "Utxo",
+    "value": 77
+}
+</code></pre>
                         <h5 id="verifying">Verifying</h5>
-                        <h5 id="blocks-kept">Blocks kept</h5>
-                        <h5 id="continents">Continents</h5>
-                        <h5 id="countries">Countries</h5>
-                        <h5 id="regions">Regions</h5>
-                        <h5 id="isps">ISPs</h5>
-                        <h5 id="daily-count">Daily node count</h5>
-                        <h5 id="weekly-count">Weekly node count</h5>
-                        <h5 id="monthly-count">Monthly node count</h5>
+                        <p>The Verifying endpoint provides an list of Ergo node verification status configuration. A 
+                            verification status configuration is either true or false.
+                        </p>
+                        <h6>Request</h6>
+                        <code>GET /api/nodes/verifying</code>
+                        <h6 class="mt-3">Response</h6>
+                        <p>The data element in the jsonapi document will be an array of key value pairs.</p>
+                        <p>The following fields appear in the key value pair:</p>
+                        <ul>
+                            <li><strong>key:</strong> The verification status</li>
+                            <li><strong>value:</strong> The number of nodes currently operating that verification status configuration</li>
+                        </ul>
+                        <h6>Sample</h6>
+                        <pre><code>
+{
+    "key": true,
+    "value": 77
+}
+</code></pre>
+                    <h5 id="blocks-kept">Blocks kept</h5>
+                    <p>The Blocks kept endpoint provides an list of Ergo node blocks kept configurations. A 
+                        blocks kept configurations lists the number of blocks kept, or reports that all blocks are kept (-1).
+                    </p>
+                    <h6>Request</h6>
+                    <code>GET /api/nodes/blocks-kept</code>
+                    <h6 class="mt-3">Response</h6>
+                    <p>The data element in the jsonapi document will be an array of key value pairs.</p>
+                    <p>The following fields appear in the key value pair:</p>
+                    <ul>
+                        <li><strong>key:</strong> The verification status</li>
+                        <li><strong>value:</strong> The number of nodes currently operating that blocks kept configurations</li>
+                    </ul>
+                    <h6>Sample</h6>
+                    <pre><code>
+{
+    "key": -1,
+    "value": 77
+}
+</code></pre>
+                    <h5 id="continents">Continents</h5>
+                    <p>The Continents endpoint provides an ordered list of continents where Ergo nodes operate.</p>
+                    <h6>Request</h6>
+                    <code>GET /api/nodes/continents</code>
+                    <h6 class="mt-3">Response</h6>
+                    <p>The data element in the jsonapi document will be an array of geography value pairs.</p>
+                    <p>The following fields appear in the geography value pair:</p>
+                    <ul>
+                        <li><strong>code:</strong> The code for the geographic location</li>
+                        <li><strong>name:</strong> The name for the geographic location</li>
+                        <li><strong>value:</strong> The number of nodes currently operating in this location</li>
+                    </ul>
+                    <h6>Sample</h6>
+                    <pre><code>
+{
+    "code": "EU",
+    "name": "Europe",
+    "value": 43
+}
+</code></pre>
+                    <h5 id="countries">Countries</h5>
+                    <p>The Countries endpoint provides an ordered list of countries where Ergo nodes operate.</p>
+                    <h6>Request</h6>
+                    <code>GET /api/nodes/countries?count=5</code>
+                    <p class="mt-2">To limit the number of return values, include the count parameter. If not included, the count will default to 5.</p>
+                    <h6 class="mt-3">Response</h6>
+                    <p>The data element in the jsonapi document will be an array of geography value pairs.</p>
+                    <p>The following fields appear in the geography value pair:</p>
+                    <ul>
+                        <li><strong>code:</strong> The code for the geographic location</li>
+                        <li><strong>name:</strong> The name for the geographic location</li>
+                        <li><strong>value:</strong> The number of nodes currently operating in this location</li>
+                    </ul>
+                    <h6>Sample</h6>
+                    <pre><code>
+{
+    "code": "DE",
+    "name": "Germany",
+    "value": 29
+}
+</code></pre>
+                    <h5 id="regions">Regions</h5>
+                    <p>The Regions endpoint provides an ordered list of regions where Ergo nodes operate within a specified country.</p>
+                    <h6>Request</h6>
+                    <code>GET /api/nodes/regions?countryCode=DE&count=5</code>
+                    <p class="mt-2">You must provide a country code as a query parameter. To limit the number of return values, include the count parameter. If not included, the count will default to 5.</p>
+                    <h6 class="mt-3">Response</h6>
+                    <p>The data element in the jsonapi document will be an array of geography value pairs. In all responses, the name and code fields are identical.</p>
+                    <p>The following fields appear in the geography value pair:</p>
+                    <ul>
+                        <li><strong>code:</strong> The code for the geographic location</li>
+                        <li><strong>name:</strong> The name for the geographic location</li>
+                        <li><strong>value:</strong> The number of nodes currently operating in this location</li>
+                    </ul>
+                    <h6>Sample</h6>
+                    <pre><code>
+{
+    "code": "BY",
+    "name": "BY",
+    "value": 14
+}
+</code></pre>
+                    <h5 id="isps">ISPs</h5>
+                    <p>The ISPs endpoint provides an ordered list of ISPs where Ergo nodes operate.</p>
+                    <h6>Request</h6>
+                    <code>GET /api/nodes/isps?count=5</code>
+                    <p class="mt-2">To limit the number of return values, include the count parameter. If not included, the count will default to 5.</p>
+                    <h6 class="mt-3">Response</h6>
+                    <p>The data element in the jsonapi document will be an array of key value pairs.</p>
+                    <p>The following fields appear in the key value pair:</p>
+                    <ul>
+                        <li><strong>key:</strong> The name of the ISP</li>
+                        <li><strong>value:</strong> The number of nodes operated by this ISP</li>
+                    </ul>
+                    <h6>Sample</h6>
+                    <pre><code>
+{
+    "key": "Ovh Sas",
+    "value": 35
+}
+</code></pre>
+
+                    <h5 id="daily-count">Daily node count</h5>
+                    <p>The Daily node count endpoint provides an ordered list of days and the number of Ergo nodes found to be active on that day.</p>
+                    <h6>Request</h6>
+                    <code>GET /api/nodes/daily-count?count=10</code>
+                    <p class="mt-2">To limit the number of return values, include the count parameter. If not included, the count will default to 10.</p>
+                    <h6 class="mt-3">Response</h6>
+                    <p>The data element in the jsonapi document will be an array of key value pairs.</p>
+                    <p>The following fields appear in the key value pair:</p>
+                    <ul>
+                        <li><strong>key:</strong> The day in ISO 8601 format (YYYY-MM-DD)</li>
+                        <li><strong>value:</strong> The number of nodes found to be active</li>
+                    </ul>
+                    <h6>Sample</h6>
+                    <pre><code>
+{
+    "key": "2022-01-06",
+    "value": 77
+}
+</code></pre>
+                    <h5 id="weekly-count">Weekly node count</h5>
+                    <p>The Weekly node count endpoint provides an ordered list of weeks and the average number of Ergo nodes found to be active in that week.</p>
+                    <h6>Request</h6>
+                    <code>GET /api/nodes/weekly-count?count=12</code>
+                    <p class="mt-2">To limit the number of return values, include the count parameter. If not included, the count will default to 12.</p>
+                    <h6 class="mt-3">Response</h6>
+                    <p>The data element in the jsonapi document will be an array of key value pairs.</p>
+                    <p>The following fields appear in the key value pair:</p>
+                    <ul>
+                        <li><strong>key:</strong> The key value contains the first day of the week in this period</li>
+                        <li><strong>value:</strong> The average number of nodes found to be active in this period</li>
+                    </ul>
+                    <h6>Sample</h6>
+                    <pre><code>
+{
+    "key": "2022-01-02",
+    "value": 77
+}
+</code></pre>
+                    <h5 id="monthly-count">Monthly node count</h5>
+                    <p>The Monthly node count endpoint provides an ordered list of months and the average number of Ergo nodes found to be active in that month.</p>
+                    <h6>Request</h6>
+                    <code>GET /api/nodes/monthly-count?count=6</code>
+                    <p class="mt-2">To limit the number of return values, include the count parameter. If not included, the count will default to 6.</p>
+                    <h6 class="mt-3">Response</h6>
+                    <p>The data element in the jsonapi document will be an array of key value pairs.</p>
+                    <p>The following fields appear in the key value pair:</p>
+                    <ul>
+                        <li><strong>key:</strong> The key value contains the year and month</li>
+                        <li><strong>value:</strong> The average number of nodes found to be active in this period</li>
+                    </ul>
+                    <h6>Sample</h6>
+                    <pre><code>
+{
+    "key": "2022-01",
+    "value": 77
+}
+</code></pre>
                     </div>
                 </div>
             </div>

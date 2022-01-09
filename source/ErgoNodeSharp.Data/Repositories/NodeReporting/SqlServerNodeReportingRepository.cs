@@ -141,17 +141,17 @@ SELECT [Address]
             }
         }
 
-        public async Task<IEnumerable<StringValuePair>> GetBlocksKeptCount()
+        public async Task<IEnumerable<IntValuePair>> GetBlocksKeptCount()
         {
             string sql = @"
-  Select Cast([BlocksToKeep] as [varchar](10)) as [Key], Count(*) as [Value]
+  Select [BlocksToKeep] as [Key], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
   Group by [BlocksToKeep]
   Order by Count(*) desc
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                return await connection.QueryAsyncWithRetry<StringValuePair>(sql);
+                return await connection.QueryAsyncWithRetry<IntValuePair>(sql);
             }
         }
 
@@ -185,7 +185,7 @@ SELECT [Address]
         public async Task<IEnumerable<StringValuePair>> GetMonthCount(int months = 6)
         {
             string sql = @$"
-  Select TOP({months}) (Cast([Month] as varchar) + '-' + Cast([Year] as varchar)) as [Key], NodeCount as [Value]
+  Select TOP({months}) (Cast([Year] as [varchar](4)) + '-' + FORMAT([Month], 'd2')) as [Key], NodeCount as [Value]
   FROM [dbo].[NodesByMonth] WITH (NOLOCK)  
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))

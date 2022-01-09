@@ -62,11 +62,15 @@ namespace ErgoNodeSpyder.App
             {
                 logger.LogInformation(nodeConnection.Key);
             }
-            
+
+            int waiting = nodeRepository.GetAddressCountForConnection().Result;
+            if (waiting > 0)
+            {
+                logger.LogInformation("{0} waiting nodes found for connection", waiting);
+            }
+
             Task<IEnumerable<NodeIdentifier>> task = nodeRepository.GetAddressesForConnection();
             List<NodeIdentifier> identifiers = task.Result.ToList();
-
-            logger.LogDebug("{0} waiting nodes found for connection", identifiers.Count);
 
             foreach (NodeIdentifier ident in identifiers)
             {

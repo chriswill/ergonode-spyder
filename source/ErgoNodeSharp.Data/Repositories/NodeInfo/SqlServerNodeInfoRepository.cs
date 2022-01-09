@@ -25,6 +25,22 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
             this.logger = logger;
         }
 
+        public async Task<int> GetAddressCountForConnection()
+        {
+            logger.LogDebug("Executing GetAddressCountForConnection");
+            string sql = @"
+  SELECT Count(*)
+  FROM [dbo].[Nodes]
+  WHERE PublicIP = 1
+     AND (DatePeersQueried IS NULL OR DatePeersQueried < DATEADD(DAY, -1, GETUTCDATE()))
+     AND (DateContactAttempted IS NULL OR DateContactAttempted < DATEADD(DAY, -1, GETUTCDATE()))  
+";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.ExecuteScalarAsyncWithRetry<int>(sql);
+            }
+        }
+
         public async Task<IEnumerable<NodeIdentifier>> GetAddressesForConnection(int topN = 10)
         {
             logger.LogDebug("Executing GetAddressesForConnection");

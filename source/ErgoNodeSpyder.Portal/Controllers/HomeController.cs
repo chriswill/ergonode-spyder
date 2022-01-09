@@ -14,16 +14,19 @@ namespace ErgoNodeSpyder.Portal.Controllers
             this.logger = logger;
         }
 
+        [Route("")]
         public IActionResult Index()
         {
             return View();
         }
 
+        [Route("about")]
         public IActionResult About()
         {
             return View();
         }
 
+        [Route("api")]
         public IActionResult Api()
         {
             return View();

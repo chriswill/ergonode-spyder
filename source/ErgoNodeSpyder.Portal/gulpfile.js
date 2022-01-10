@@ -15,27 +15,6 @@ var paths = {
     scripts: ['app/scripts/**/*.js', 'app/scripts/**/*.map']
 };
 
-var css = [
-    
-];
-var cssMin = [
-    
-];
-var vendorJs = [
-   
-];
-var vendorJsMin = [
-   
-];
-
-var kendoJs = [
- 
-];
-
-var kendoJsMin = [
-  
-];
-
 
 function clean(cb) {
     del(['wwwroot/css/fonts/**/*', 'wwwroot/css/**/*', 'wwwroot/js/**/*']);

@@ -1,5 +1,42 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Geo Analytics";
+}
+<div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl">
+    <div class="content flex-row-fluid" id="kt_content">
+        <div class="row gy-5 g-xl-10">
+            <div class="col-md-4 col-xl-4 mb-md-5 mb-xxl-10">
+                <div class="card overflow-hidden mb-5 mb-lg-10">
+                    <div class="card-header card-header-stretch">
+                        <h3 class="card-title">Nodes by continent</h3>
+                        <div class="card-toolbar">
+                            
+                        </div>
+                    </div>
+                    <div class="card-body pt-5 ps-6">
+                        <div id="continents-widget" class="min-h-auto"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-6 mb-md-5 mb-xxl-10">
+                <div class="card overflow-hidden mb-5 mb-lg-10">
+                    <div class="card-header card-header-stretch">
+                        <h3 class="card-title">Nodes by country</h3>
+                        <div class="card-toolbar">
+                            
+                        </div>
+                    </div>
+                    <div class="card-body pt-5 ps-6">
+                        <div id="countries-widget" class="min-h-auto"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+    <script type="text/javascript" src="~/js/pages/geo.js"></script>
 }

@@ -71,9 +71,13 @@
                             <div class="card-header pt-7">
                                 <h3 class="card-title align-items-start flex-column">
                                     <span class="card-label fw-bolder text-dark">Versions</span>
-                                    <span class="text-gray-400 pt-2 fw-bold fs-6">Top 10 versions</span>
+                                    <span class="text-gray-400 pt-2 fw-bold fs-6">Top 5 versions</span>
                                 </h3>
-                                <div class="card-toolbar"></div>
+                                <div class="card-toolbar" data-kt-buttons="true">
+                                    <button class="btn btn-sm btn-color-muted btn-active btn-active-primary active px-4 me-1" id="version_widget_5_btn">5</button>
+                                    <button class="btn btn-sm btn-color-muted btn-active btn-active-primary px-4 me-1" id="version_widget_10_btn">10</button>
+                                    <button class="btn btn-sm btn-color-muted btn-active btn-active-primary px-4" id="version_widget_20_btn">20</button>
+                                </div>
                             </div>
                             <div class="card-body d-flex flex-center">
                                 <div id="versions" class="min-h-auto" style="height: 150px"></div>
@@ -88,9 +92,13 @@
                     <div class="card-header pt-7">
                         <h3 class="card-title align-items-start flex-column">
                             <span class="card-label fw-bolder text-dark">Nodes by Country</span>
-                            <span class="text-gray-400 pt-2 fw-bold fs-6">Top 10 countries</span>
+                            <span class="text-gray-400 pt-2 fw-bold fs-6">Top 5 countries</span>
                         </h3>
-                        <div class="card-toolbar"></div>
+                        <div class="card-toolbar" data-kt-buttons="true">
+                            <button class="btn btn-sm btn-color-muted btn-active btn-active-primary active px-4 me-1" id="country_widget_5_btn">5</button>
+                            <button class="btn btn-sm btn-color-muted btn-active btn-active-primary px-4 me-1" id="country_widget_10_btn">10</button>
+                            <button class="btn btn-sm btn-color-muted btn-active btn-active-primary px-4" id="country_widget_20_btn">20</button>
+                        </div>
                     </div>
                     <div class="card-body d-flex flex-center">
                         <div id="node-map" class="w-100 h-350px"></div>

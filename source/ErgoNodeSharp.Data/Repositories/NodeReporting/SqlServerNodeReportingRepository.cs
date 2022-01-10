@@ -54,10 +54,10 @@ SELECT [Address]
             }
         }
 
-        public async Task<IEnumerable<StringValuePair>> GetVersionCount()
+        public async Task<IEnumerable<StringValuePair>> GetVersionCount(int count = 5)
         {
-            string sql = @"
-  Select [Version] as [Key], Count(*) as [Value]
+            string sql = @$"
+  Select TOP({count}) [Version] as [Key], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
   Group by [Version]
   Order by Count(*) desc

@@ -2,11 +2,14 @@
     updateDailyNodeCount();
     updateWeeklyNodeCount();
     updateMonthlyNodeCount();
-    getTopCountries();
-    getVersions();
+    getTopCountries(5);
+    getVersions(5);
     updateVerifications();
     updateStateType();
     updateBlocks();
+
+
+
 });
 
 var updateDailyNodeCount = function() {
@@ -70,11 +73,11 @@ var updateMonthlyNodeCount = function () {
     });
 }
 
-var getTopCountries = function () {
+var getTopCountries = function (showCount) {
 
     am5.ready(function () {
 
-        $.get('/api/nodes/geo/countries?count=10',
+        $.get('/api/nodes/geo/countries?count=' + showCount,
             function(data) {
                 const countries = data.data.map(x => {
                     return x.code;
@@ -178,8 +181,8 @@ var getTopCountries = function () {
         });
 }
 
-var getVersions = function() {
-    $.get('/api/nodes/versions', function (data) {
+var getVersions = function (showCount) {
+    $.get('/api/nodes/versions?count=' + showCount, function (data) {
         const length = data.data.length;
 
         if (length > 0) {

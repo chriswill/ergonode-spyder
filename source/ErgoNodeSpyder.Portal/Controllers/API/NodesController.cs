@@ -45,11 +45,20 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
         }
 
         [Route("versions")]
-        public async Task<IActionResult> Versions()
+        public async Task<IActionResult> Versions(int count = 5)
         {
+            if (count <= 0)
+            {
+                ErrorMessage errorMessage = new ErrorMessage();
+                errorMessage.Status = "400";
+                errorMessage.Title = "Invalid request";
+                errorMessage.Detail = "Count parameter must be greater than zero";
+                ErrorResponse errorResponse = new ErrorResponse(errorMessage);
+                return BadRequest(errorResponse);
+            }
             JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
 
-            response.Data = await repository.GetVersionCount();
+            response.Data = await repository.GetVersionCount(count);
             response.Meta.TotalRecords = response.Data.Count();
 
             return Ok(response);

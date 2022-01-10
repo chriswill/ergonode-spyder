@@ -148,7 +148,8 @@
                         <h5 id="versions">Versions</h5>
                         <p>The versions endpoint provides an ordered list of Ergo node versions and the number of nodes using each version.</p>
                         <h6>Request</h6>
-                        <code>GET /api/nodes/versions</code>
+                        <code>GET /api/nodes/versions?count=5</code>
+                        <p class="mt-2">To limit the number of return values, include the count parameter. If not included, the count will default to 5.</p>
                         <h6 class="mt-3">Response</h6>
                         <p>The data element in the jsonapi document will be an array of key value pairs.</p>
                         <p>The following fields appear in the key value pair:</p>

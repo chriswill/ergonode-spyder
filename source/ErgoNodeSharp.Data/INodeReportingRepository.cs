@@ -8,7 +8,7 @@ namespace ErgoNodeSharp.Data
     {
         Task<IEnumerable<NodeInfo>> GetNodeInfos();
 
-        Task<IEnumerable<StringValuePair>> GetVersionCount();
+        Task<IEnumerable<StringValuePair>> GetVersionCount(int count = 5);
 
         Task<IEnumerable<GeoSummary>> GetContinentCount();
 

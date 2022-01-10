@@ -2,12 +2,134 @@
     updateDailyNodeCount();
     updateWeeklyNodeCount();
     updateMonthlyNodeCount();
-    getTopCountries();
-    getVersions();
+    getVersions(5, false);
     updateVerifications();
     updateStateType();
     updateBlocks();
+
+    $('.country-chooser').click(function () {
+        root.container.children.clear();
+        
+        var elem = this;
+        var count = parseInt(elem.innerText);
+        updateMap(count);
+        var display = document.getElementById('country-display');
+        display.innerText = `Top ${count} countries`;
+    });
+
+    $('.version-chooser').click(function () {
+
+        var elem = this;
+        var count = parseInt(elem.innerText);
+        getVersions(count, true);
+
+        var display = document.getElementById('version-display');
+        display.innerText = `Top ${count} versions`;
+    });
+
 });
+
+var root = null;
+
+am5.ready(function () {
+    root = am5.Root.new("node-map");
+    updateMap(5);
+
+});
+
+var updateMap = function(items) {
+    $.get(`/api/nodes/geo/countries?count=${items}`, function (data) {
+        const countries = data.data.map(x => {
+            return x.code;
+        });
+
+        // Set themes
+        // https://www.amcharts.com/docs/v5/concepts/themes/
+        root.setThemes([am5themes_Animated.new(root)]);
+
+        // Create the map chart
+        // https://www.amcharts.com/docs/v5/charts/map-chart/
+        var chart = root.container.children.push(
+            am5map.MapChart.new(root, {
+                panX: 'translateX',
+                panY: 'translateY',
+                projection: am5map.geoMercator(),
+                paddingLeft: 0,
+                paddingRight: 0,
+                paddingBottom: 0
+            })
+        );
+
+        // Create main polygon series for countries
+        // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
+        var polygonSeries = chart.series.push(
+            am5map.MapPolygonSeries.new(root, {
+                geoJSON: am5geodata_worldLow,
+                exclude: ['AQ']
+            })
+        );
+
+        polygonSeries.mapPolygons.template.setAll({
+            tooltipText: '{name}',
+            toggleKey: 'active',
+            interactive: true,
+            fill: am5.color(KTUtil.getCssVariableValue('--bs-gray-300'))
+        });
+
+        polygonSeries.mapPolygons.template.states.create('hover', {
+            fill: am5.color(KTUtil.getCssVariableValue('--bs-success'))
+        });
+
+        polygonSeries.mapPolygons.template.states.create('active', {
+            fill: am5.color(KTUtil.getCssVariableValue('--bs-success'))
+        });
+
+        // Highlighted Series
+        // Create main polygon series for countries
+        // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
+        var polygonSeriesHighlighted = chart.series.push(
+            am5map.MapPolygonSeries.new(root, {
+                geoJSON: am5geodata_worldLow,
+                include: countries
+            })
+        );
+
+        polygonSeriesHighlighted.mapPolygons.template.setAll({
+            tooltipText: '{name}',
+            toggleKey: 'active',
+            interactive: true
+        });
+
+        var colors = am5.ColorSet.new(root, {});
+
+        polygonSeriesHighlighted.mapPolygons.template.set(
+            'fill',
+            am5.color(KTUtil.getCssVariableValue('--bs-primary'))
+        );
+
+        polygonSeriesHighlighted.mapPolygons.template.states.create("hover", {
+            fill: root.interfaceColors.get('primaryButtonHover')
+        });
+
+        polygonSeriesHighlighted.mapPolygons.template.states.create("active", {
+            fill: root.interfaceColors.get('primaryButtonHover')
+        });
+
+        // Add zoom control
+        // https://www.amcharts.com/docs/v5/charts/map-chart/map-pan-zoom/#Zoom_control
+        //chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
+
+        // Set clicking on "water" to zoom out
+        chart.chartContainer
+            .get('background')
+            .events.on('click', function () {
+                chart.goHome();
+            });
+
+        // Make stuff animate on load
+        chart.appear(1000, 100);
+    });
+}
 
 var updateDailyNodeCount = function() {
     $.get('/api/nodes/daily-count', function (data) {
@@ -70,116 +192,116 @@ var updateMonthlyNodeCount = function () {
     });
 }
 
-var getTopCountries = function () {
+//var getTopCountries = function (showCount) {
 
-    am5.ready(function () {
+//    am5.ready(function () {
 
-        $.get('/api/nodes/geo/countries?count=10',
-            function(data) {
-                const countries = data.data.map(x => {
-                    return x.code;
-                });
+//        $.get('/api/nodes/geo/countries?count=' + showCount,
+//            function(data) {
+//                const countries = data.data.map(x => {
+//                    return x.code;
+//                });
 
-                var element = document.getElementById('node-map');
+//                var element = document.getElementById('node-map');
 
-                if (!element) {
-                    return;
-                }
-                // https://www.amcharts.com/docs/v5/getting-started/#Root_element
-                var root = am5.Root.new(element);
+//                if (!element) {
+//                    return;
+//                }
+//                // https://www.amcharts.com/docs/v5/getting-started/#Root_element
+//                root = am5.Root.new(element);
                 
-                // Set themes
-                // https://www.amcharts.com/docs/v5/concepts/themes/
-                root.setThemes([am5themes_Animated.new(root)]);
+//                // Set themes
+//                // https://www.amcharts.com/docs/v5/concepts/themes/
+//                root.setThemes([am5themes_Animated.new(root)]);
 
-                // Create the map chart
-                // https://www.amcharts.com/docs/v5/charts/map-chart/
-                var chart = root.container.children.push(
-                    am5map.MapChart.new(root, {
-                        panX: 'translateX',
-                        panY: 'translateY',
-                        projection: am5map.geoMercator(),
-                        paddingLeft: 0,
-                        paddingrIGHT: 0,
-                        paddingBottom: 0
-                    })
-                );
+//                // Create the map chart
+//                // https://www.amcharts.com/docs/v5/charts/map-chart/
+//                var chart = root.container.children.push(
+//                    am5map.MapChart.new(root, {
+//                        panX: 'translateX',
+//                        panY: 'translateY',
+//                        projection: am5map.geoMercator(),
+//                        paddingLeft: 0,
+//                        paddingRight: 0,
+//                        paddingBottom: 0
+//                    })
+//                );
 
-                // Create main polygon series for countries
-                // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
-                var polygonSeries = chart.series.push(
-                    am5map.MapPolygonSeries.new(root, {
-                        geoJSON: am5geodata_worldLow,
-                        exclude: ['AQ']
-                    })
-                );
+//                // Create main polygon series for countries
+//                // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
+//                var polygonSeries = chart.series.push(
+//                    am5map.MapPolygonSeries.new(root, {
+//                        geoJSON: am5geodata_worldLow,
+//                        exclude: ['AQ']
+//                    })
+//                );
 
-                polygonSeries.mapPolygons.template.setAll({
-                    tooltipText: '{name}',
-                    toggleKey: 'active',
-                    interactive: true,
-                    fill: am5.color(KTUtil.getCssVariableValue('--bs-gray-300'))
-                });
+//                polygonSeries.mapPolygons.template.setAll({
+//                    tooltipText: '{name}',
+//                    toggleKey: 'active',
+//                    interactive: true,
+//                    fill: am5.color(KTUtil.getCssVariableValue('--bs-gray-300'))
+//                });
 
-                polygonSeries.mapPolygons.template.states.create('hover', {
-                    fill: am5.color(KTUtil.getCssVariableValue('--bs-success'))
-                });
+//                polygonSeries.mapPolygons.template.states.create('hover', {
+//                    fill: am5.color(KTUtil.getCssVariableValue('--bs-success'))
+//                });
 
-                polygonSeries.mapPolygons.template.states.create('active', {
-                    fill: am5.color(KTUtil.getCssVariableValue('--bs-success'))
-                });
+//                polygonSeries.mapPolygons.template.states.create('active', {
+//                    fill: am5.color(KTUtil.getCssVariableValue('--bs-success'))
+//                });
 
-                // Highlighted Series
-                // Create main polygon series for countries
-                // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
-                var polygonSeriesHighlighted = chart.series.push(
-                    am5map.MapPolygonSeries.new(root, {
-                        geoJSON: am5geodata_worldLow,
-                        include: countries
-                    })
-                );
+//                // Highlighted Series
+//                // Create main polygon series for countries
+//                // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
+//                var polygonSeriesHighlighted = chart.series.push(
+//                    am5map.MapPolygonSeries.new(root, {
+//                        geoJSON: am5geodata_worldLow,
+//                        include: countries
+//                    })
+//                );
 
-                polygonSeriesHighlighted.mapPolygons.template.setAll({
-                    tooltipText: '{name}',
-                    toggleKey: 'active',
-                    interactive: true
-                });
+//                polygonSeriesHighlighted.mapPolygons.template.setAll({
+//                    tooltipText: '{name}',
+//                    toggleKey: 'active',
+//                    interactive: true
+//                });
 
-                var colors = am5.ColorSet.new(root, {});
+//                var colors = am5.ColorSet.new(root, {});
 
-                polygonSeriesHighlighted.mapPolygons.template.set(
-                    'fill',
-                    am5.color(KTUtil.getCssVariableValue('--bs-primary'))
-                );
+//                polygonSeriesHighlighted.mapPolygons.template.set(
+//                    'fill',
+//                    am5.color(KTUtil.getCssVariableValue('--bs-primary'))
+//                );
 
-                polygonSeriesHighlighted.mapPolygons.template.states.create("hover", {
-                    fill: root.interfaceColors.get('primaryButtonHover')
-                });
+//                polygonSeriesHighlighted.mapPolygons.template.states.create("hover", {
+//                    fill: root.interfaceColors.get('primaryButtonHover')
+//                });
 
-                polygonSeriesHighlighted.mapPolygons.template.states.create("active", {
-                    fill: root.interfaceColors.get('primaryButtonHover')
-                });
+//                polygonSeriesHighlighted.mapPolygons.template.states.create("active", {
+//                    fill: root.interfaceColors.get('primaryButtonHover')
+//                });
 
-                // Add zoom control
-                // https://www.amcharts.com/docs/v5/charts/map-chart/map-pan-zoom/#Zoom_control
-                //chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
+//                // Add zoom control
+//                // https://www.amcharts.com/docs/v5/charts/map-chart/map-pan-zoom/#Zoom_control
+//                //chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
 
-                // Set clicking on "water" to zoom out
-                chart.chartContainer
-                    .get('background')
-                    .events.on('click', function () {
-                        chart.goHome();
-                    });
+//                // Set clicking on "water" to zoom out
+//                chart.chartContainer
+//                    .get('background')
+//                    .events.on('click', function () {
+//                        chart.goHome();
+//                    });
 
-                // Make stuff animate on load
-                chart.appear(1000, 100);
-            }); // end am5.ready()
+//                // Make stuff animate on load
+//                chart.appear(1000, 100);
+//            }); // end am5.ready()
 
-        });
-}
+//        });
+//}
 
-var getVersions = function() {
-    $.get('/api/nodes/versions', function (data) {
+var getVersions = function (showCount, update) {
+    $.get(`/api/nodes/versions?count=${showCount}`, function (data) {
         const length = data.data.length;
 
         if (length > 0) {
@@ -190,8 +312,14 @@ var getVersions = function() {
             const values = data.data.map(x => {
                 return x.value;
             });
+
             var element = document.getElementById('versions');
-            initVersionChart(element, keys, values);
+            if (update) {
+                updateVersionChart(element, keys, values);
+            } else {
+                initVersionChart(element, keys, values);
+            }
+            
         }
     });
 }
@@ -342,6 +470,24 @@ var initVersionChart = function(element, keys, values) {
         return;
     }
 
+    const options = createVersionOptions(element, keys, values);
+    
+    var chart = new ApexCharts(element, options);
+
+    // Set timeout to properly get the parent elements width
+    setTimeout(function () {
+        chart.render();
+    }, 300);
+}
+
+var updateVersionChart = function (element, keys, values) {
+    
+    const options = createVersionOptions(element, keys, values);
+
+    ApexCharts.exec('versionChart', 'updateOptions', options, false, true);
+}
+
+var createVersionOptions = function(element, keys, values) {
     var parent = $('#version-card');
     var width = parent.width();
 
@@ -356,6 +502,7 @@ var initVersionChart = function(element, keys, values) {
         chart: {
             height: height,
             width: width,
+            id: 'versionChart',
             type: 'pie'
         },
         plotOptions: {
@@ -373,7 +520,7 @@ var initVersionChart = function(element, keys, values) {
         labels: keys,
         legend: {
             formatter: function (val, opts) {
-                return val + " - " + opts.w.globals.series[opts.seriesIndex];
+                return val + ' - ' + opts.w.globals.series[opts.seriesIndex];
             }
         },
         title: {
@@ -392,13 +539,7 @@ var initVersionChart = function(element, keys, values) {
         }]
     };
 
-
-    var chart = new ApexCharts(element, options);
-
-    // Set timeout to properly get the parent elements width
-    setTimeout(function () {
-        chart.render();
-    }, 300);
+    return options;
 }
 
 var sumArray = function(arrayVals) {
@@ -424,10 +565,10 @@ var updateVerifications = function() {
             const percentage = (topValue * 100) / sumArray(values);
             
             const element = document.getElementById('verification-display');
-            element.innerText = percentage + '%';
+            element.innerText = `${percentage}%`;
 
             const ruler = document.getElementById('verification-ruler');
-            ruler.style.width = percentage + '%';
+            ruler.style.width = `${percentage}%`;
         }
     });
 }
@@ -445,10 +586,10 @@ var updateStateType = function() {
             const percentage = (topValue * 100) / sumArray(values);
 
             const element = document.getElementById('state-display');
-            element.innerText = percentage + '%';
+            element.innerText = `${percentage}%`;
 
             const ruler = document.getElementById('state-ruler');
-            ruler.style.width = percentage + '%';
+            ruler.style.width = `${percentage}%`;
         }
     });
 }
@@ -466,10 +607,10 @@ var updateBlocks = function() {
             const percentage = (topValue * 100) / sumArray(values);
 
             const element = document.getElementById('blocks-display');
-            element.innerText = percentage + '%';
+            element.innerText = `${percentage}%`;
 
             const ruler = document.getElementById('blocks-ruler');
-            ruler.style.width = percentage + '%';
+            ruler.style.width = `${percentage}%`;
         }
     });
 }

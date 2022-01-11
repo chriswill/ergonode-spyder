@@ -1,0 +1,6 @@
+﻿(function () {
+    $(document).ready(function () {
+        
+        
+    });
+})();

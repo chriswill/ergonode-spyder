@@ -1,32 +1,31 @@
-﻿@{
-    ViewData["Title"] = "Geo Analytics";
+﻿@model ErgoNodeSpyder.Portal.Models.Geo.CountryViewModel
+@{
+    ViewData["Title"] = "Country: " + Model?.CountryCode;
 }
+
 <div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl">
     <div class="content flex-row-fluid" id="kt_content">
         <div class="row gy-5 g-xl-10">
             <div class="col-md-4 col-xl-4 mb-md-5 mb-xxl-10">
                 <div class="card overflow-hidden mb-5 mb-lg-10">
                     <div class="card-header card-header-stretch">
-                        <h3 class="card-title">Nodes by continent</h3>
+                        <h3 class="card-title">@Model?.CountryName</h3>
                         <div class="card-toolbar">
                             
                         </div>
                     </div>
                     <div class="card-body pt-5 ps-6">
-                        <div id="continents-widget" class="min-h-auto"></div>
+                        
                     </div>
                 </div>
             </div>
             <div class="col-md-4 col-xl-4 mb-md-5 mb-xxl-10">
                 <div class="card overflow-hidden mb-5 mb-lg-10">
                     <div class="card-header card-header-stretch">
-                        <h3 class="card-title">Nodes by country</h3>
-                        <div class="card-toolbar">
-                            
-                        </div>
+                        
                     </div>
                     <div class="card-body pt-5 ps-6">
-                        <div id="countries-widget" class="min-h-auto"></div>
+                        
                     </div>
                 </div>
             </div>
@@ -35,10 +34,10 @@
 </div>
 @section scripts {
 
-<environment names="Development">
-    <script type="text/javascript" src="~/js/pages/geo.js"></script>
-</environment>
-<environment names="Staging,Production">
-    <script type="text/javascript" src="~/js/pages/geo.min.js"></script>
-</environment>
+    <environment names="Development">
+        <script type="text/javascript" src="~/js/pages/country.js"></script>
+    </environment>
+    <environment names="Staging,Production">
+        <script type="text/javascript" src="~/js/pages/country.min.js"></script>
+    </environment>
 }

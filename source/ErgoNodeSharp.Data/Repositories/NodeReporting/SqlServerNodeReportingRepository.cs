@@ -57,10 +57,10 @@ SELECT [Address]
         public async Task<IEnumerable<StringValuePair>> GetVersionCount(int count = 5)
         {
             string sql = @$"
-  Select TOP({count}) [Version] as [Key], Count(*) as [Value]
+  SELECT TOP ({count}) [Version] as [Key], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
-  Group by [Version]
-  Order by Count(*) desc
+  GROUP BY [Version]
+  ORDER BY Count(*) DESC
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -71,11 +71,10 @@ SELECT [Address]
         public async Task<IEnumerable<GeoSummary>> GetContinentCount()
         {
             string sql = @"
-  Select ISNULL([ContinentCode],'Unknown') as [Code], ISNULL([ContinentName],'Unknown') as [Name], Count(*) as [Value]
+  SELECT ISNULL([ContinentCode],'Unknown') as [Code], ISNULL([ContinentName],'Unknown') as [Name], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
-  WHERE PublicIp = 1
-  Group by [ContinentCode], [ContinentName]
-  Order by Count(*) desc
+  GROUP BY [ContinentCode], [ContinentName]
+  ORDER BY Count(*) DESC
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -86,11 +85,10 @@ SELECT [Address]
         public async Task<IEnumerable<GeoSummary>> GetCountryCount(int count = 5)
         {
             string sql = @$"
-  Select TOP({count}) ISNULL([CountryCode],'Unknown') as [Code], ISNULL([CountryName],'Unknown') as [Name], Count(*) as [Value]
-  FROM [dbo].[ActiveNodes] WITH (NOLOCK)
-  WHERE PublicIp = 1
-  Group by [CountryCode], [CountryName]
-  Order by Count(*) desc
+  SELECT TOP ({count}) ISNULL([CountryCode],'Unknown') as [Code], ISNULL([CountryName],'Unknown') as [Name], Count(*) as [Value]
+  FROM [dbo].[ActiveNodes] WITH (NOLOCK) 
+  GROUP BY [CountryCode], [CountryName]
+  ORDER BY Count(*) DESC
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -101,11 +99,11 @@ SELECT [Address]
         public async Task<IEnumerable<GeoSummary>> GetRegionCount(string countryCode, int count = 5)
         {
             string sql = @$"
-  Select TOP({count}) ISNULL([RegionCode],'Unknown') as [Code], ISNULL([RegionName],'Unknown') as [Name], Count(*) as [Value]
+  SELECT TOP ({count}) ISNULL([RegionCode],'Unknown') as [Code], ISNULL([RegionName],'Unknown') as [Name], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
-  WHERE PublicIp = 1 AND CountryCode = @countryCode
-  Group by [RegionCode], [RegionName]
-  Order by Count(*) desc
+  WHERE CountryCode = @countryCode
+  GROUP BY [RegionCode], [RegionName]
+  ORDER BY Count(*) DESC
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -116,10 +114,10 @@ SELECT [Address]
         public async Task<IEnumerable<StringValuePair>> GetStateTypeCount()
         {
             string sql = @"
-  Select [StateType] as [Key], Count(*) as [Value]
+  SELECT [StateType] as [Key], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
-  Group by [StateType]
-  Order by Count(*) desc
+  GROUP BY [StateType]
+  ORDER BY Count(*) DESC
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -130,10 +128,10 @@ SELECT [Address]
         public async Task<IEnumerable<BoolValuePair>> GetVerifyingCount()
         {
             string sql = @"
-  Select [VerifyingTransactions] as [Key], Count(*) as [Value]
+  SELECT [VerifyingTransactions] as [Key], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
-  Group by [VerifyingTransactions]
-  Order by Count(*) desc
+  GROUP BY [VerifyingTransactions]
+  ORDER BY Count(*) DESC
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -144,10 +142,10 @@ SELECT [Address]
         public async Task<IEnumerable<IntValuePair>> GetBlocksKeptCount()
         {
             string sql = @"
-  Select [BlocksToKeep] as [Key], Count(*) as [Value]
+  SELECT [BlocksToKeep] as [Key], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
-  Group by [BlocksToKeep]
-  Order by Count(*) desc
+  GROUP BY [BlocksToKeep]
+  ORDER BY Count(*) DESC
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -155,25 +153,41 @@ SELECT [Address]
             }
         }
 
-        public async Task<IEnumerable<StringValuePair>> GetIspCount(int count = 10)
+        public async Task<IEnumerable<StringValuePair>> GetIspCount(string countryCode = null, int count = 10)
         {
-            string sql = @$"
-  Select TOP({count}) ISNULL([ISP],'Unknown') as [Key], Count(*) as [Value]
-  FROM [dbo].[ActiveNodes] WITH (NOLOCK)
-  WHERE PublicIp = 1
-  Group by [ISP]
-  Order by Count(*) desc
-";
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            if (string.IsNullOrEmpty(countryCode))
             {
-                return await connection.QueryAsyncWithRetry<StringValuePair>(sql);
+                string sql = @$"
+  SELECT TOP ({count}) ISNULL([ISP],'Unknown') as [Key], Count(*) as [Value]
+  FROM [dbo].[ActiveNodes] WITH (NOLOCK) 
+  GROUP BY [ISP]
+  ORDER BY Count(*) DESC
+";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    return await connection.QueryAsyncWithRetry<StringValuePair>(sql);
+                }
+            }
+            else
+            {
+                string sql = @$"
+  SELECT TOP ({count}) ISNULL([ISP],'Unknown') as [Key], Count(*) as [Value]
+  FROM [dbo].[ActiveNodes] WITH (NOLOCK)
+  WHERE CountryCode = @countryCode
+  GROUP BY [ISP]
+  ORDER BY Count(*) DESC
+";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    return await connection.QueryAsyncWithRetry<StringValuePair>(sql, new {countryCode});
+                }
             }
         }
 
         public async Task<IEnumerable<StringValuePair>> GetDailyCount(int days = 10)
         {
             string sql = @$"
-  Select TOP({days}) CONVERT(varchar, [Day], 23) as [Key], NodeCount as [Value]
+  SELECT TOP ({days}) CONVERT(varchar, [Day], 23) as [Key], NodeCount as [Value]
   FROM [dbo].[NodesByDay] WITH (NOLOCK)  
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -185,7 +199,7 @@ SELECT [Address]
         public async Task<IEnumerable<StringValuePair>> GetMonthCount(int months = 6)
         {
             string sql = @$"
-  Select TOP({months}) (Cast([Year] as [varchar](4)) + '-' + FORMAT([Month], 'd2')) as [Key], NodeCount as [Value]
+  SELECT TOP ({months}) (Cast([Year] as [varchar](4)) + '-' + FORMAT([Month], 'd2')) as [Key], NodeCount as [Value]
   FROM [dbo].[NodesByMonth] WITH (NOLOCK)  
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -197,13 +211,28 @@ SELECT [Address]
         public async Task<IEnumerable<StringValuePair>> GetWeekCount(int weeks = 12)
         {
             string sql = @$"
-  Select TOP({weeks}) CONVERT([varchar], DATEADD(wk, DATEDIFF(wk, 6, DATEFROMPARTS([Year], 1, 1)) + ([Week]-1), 6),23) as [Key], NodeCount as [Value]
+  SELECT TOP ({weeks}) CONVERT([varchar], DATEADD(wk, DATEDIFF(wk, 6, DATEFROMPARTS([Year], 1, 1)) + ([Week]-1), 6),23) as [Key], NodeCount as [Value]
   FROM [dbo].[NodesByWeek] WITH (NOLOCK)  
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 return await connection.QueryAsyncWithRetry<StringValuePair>(sql);
             }
+        }
+
+        public async Task<string> GetCountyName(string countryCode)
+        {
+
+            string sql = @"
+SELECT TOP(1) CountryName
+FROM dbo.Nodes WITH (NOLOCK)  
+WHERE CountryCode = @countryCode
+";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.ExecuteScalarAsyncWithRetry<string>(sql, new {countryCode});
+            }
+
         }
     }
 }

@@ -127,8 +127,18 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
         }
 
         [Route("geo/isps")]
-        public async Task<IActionResult> Isps(int count = 10)
+        public async Task<IActionResult> Isps(string countryCode = null, int count = 10)
         {
+            if (!string.IsNullOrEmpty(countryCode) && countryCode.Length != 2)
+            {
+                ErrorMessage errorMessage = new ErrorMessage();
+                errorMessage.Status = "400";
+                errorMessage.Title = "Invalid request";
+                errorMessage.Detail = "Invalid country code supplied";
+                ErrorResponse errorResponse = new ErrorResponse(errorMessage);
+                return BadRequest(errorResponse);
+            }
+
             if (count <= 0)
             {
                 ErrorMessage errorMessage = new ErrorMessage();
@@ -141,7 +151,7 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
 
             JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
 
-            response.Data = await repository.GetIspCount(count);
+            response.Data = await repository.GetIspCount(countryCode, count);
             response.Meta.TotalRecords = response.Data.Count();
 
             return Ok(response);

@@ -22,12 +22,14 @@ namespace ErgoNodeSharp.Data
 
         Task<IEnumerable<IntValuePair>> GetBlocksKeptCount();
 
-        Task<IEnumerable<StringValuePair>> GetIspCount(int count = 10);
+        Task<IEnumerable<StringValuePair>> GetIspCount(string countryCode = null, int count = 10);
 
         Task<IEnumerable<StringValuePair>> GetDailyCount(int days = 10);
 
         Task<IEnumerable<StringValuePair>> GetMonthCount(int months = 6);
 
         Task<IEnumerable<StringValuePair>> GetWeekCount(int weeks = 12);
+
+        Task<string> GetCountyName(string countryCode);
     }
 }

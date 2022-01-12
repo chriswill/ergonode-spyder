@@ -59,7 +59,7 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
             JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
 
             response.Data = await repository.GetVersionCount(count);
-            response.Meta.TotalRecords = response.Data.Count();
+            response.Meta.TotalRecords = await repository.GetVersionRowCount();
 
             return Ok(response);
         }
@@ -90,7 +90,7 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
             JsonApiResponse<GeoSummary> response = CreateJsonGeoApiResponse();
 
             response.Data = await repository.GetCountryCount(count);
-            response.Meta.TotalRecords = response.Data.Count();
+            response.Meta.TotalRecords = await repository.GetCountryRowCount();
 
             return Ok(response);
         }
@@ -121,7 +121,7 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
             JsonApiResponse<GeoSummary> response = CreateJsonGeoApiResponse();
 
             response.Data = await repository.GetRegionCount(countryCode, count);
-            response.Meta.TotalRecords = response.Data.Count();
+            response.Meta.TotalRecords = await repository.GetRegionRowCount(countryCode);
 
             return Ok(response);
         }
@@ -152,7 +152,7 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
             JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
 
             response.Data = await repository.GetIspCount(countryCode, count);
-            response.Meta.TotalRecords = response.Data.Count();
+            response.Meta.TotalRecords = await repository.GetIspRowCount(countryCode);
 
             return Ok(response);
         }
@@ -220,7 +220,7 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
             JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
 
             response.Data = await repository.GetDailyCount(count);
-            response.Meta.TotalRecords = response.Data.Count();
+            response.Meta.TotalRecords = await repository.GetDailyRowCount();
 
             return Ok(response);
         }
@@ -241,7 +241,7 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
             JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
 
             response.Data = await repository.GetWeekCount(count);
-            response.Meta.TotalRecords = response.Data.Count();
+            response.Meta.TotalRecords = await repository.GetWeekRowCount();
 
             return Ok(response);
         }
@@ -262,7 +262,7 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
             JsonApiResponse<StringValuePair> response = CreateJsonApiResponse();
 
             response.Data = await repository.GetMonthCount(count);
-            response.Meta.TotalRecords = response.Data.Count();
+            response.Meta.TotalRecords = await repository.GetMonthRowCount();
 
             return Ok(response);
         }

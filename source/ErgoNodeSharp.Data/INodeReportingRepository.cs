@@ -9,12 +9,15 @@ namespace ErgoNodeSharp.Data
         Task<IEnumerable<NodeInfo>> GetNodeInfos();
 
         Task<IEnumerable<StringValuePair>> GetVersionCount(int count = 5);
+        Task<int> GetVersionRowCount();
 
         Task<IEnumerable<GeoSummary>> GetContinentCount();
 
         Task<IEnumerable<GeoSummary>> GetCountryCount(int count = 5);
+        Task<int> GetCountryRowCount();
 
         Task<IEnumerable<GeoSummary>> GetRegionCount(string countryCode, int count = 5);
+        Task<int> GetRegionRowCount(string countryCode);
 
         Task<IEnumerable<StringValuePair>> GetStateTypeCount();
 
@@ -23,12 +26,16 @@ namespace ErgoNodeSharp.Data
         Task<IEnumerable<IntValuePair>> GetBlocksKeptCount();
 
         Task<IEnumerable<StringValuePair>> GetIspCount(string countryCode = null, int count = 10);
+        Task<int> GetIspRowCount(string countryCode = null);
 
         Task<IEnumerable<StringValuePair>> GetDailyCount(int days = 10);
+        Task<int> GetDailyRowCount();
 
         Task<IEnumerable<StringValuePair>> GetMonthCount(int months = 6);
+        Task<int> GetMonthRowCount();
 
         Task<IEnumerable<StringValuePair>> GetWeekCount(int weeks = 12);
+        Task<int> GetWeekRowCount();
 
         Task<string> GetCountyName(string countryCode);
     }

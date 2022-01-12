@@ -2,6 +2,7 @@ using System;
 using ErgoNodeSharp.Data;
 using ErgoNodeSharp.Data.Repositories.NodeReporting;
 using ErgoNodeSharp.Models.Configuration;
+using ErgoNodeSpyder.Portal.Health;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +21,8 @@ namespace ErgoNodeSpyder.Portal
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .CreateBootstrapLogger();
-            CreateHostBuilder(args).Build().Run();
+            var app = CreateHostBuilder(args).Build();
+            app.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -47,6 +49,9 @@ namespace ErgoNodeSpyder.Portal
                     services.AddSingleton(connection);
 
                     services.AddTransient<INodeReportingRepository, SqlServerNodeReportingRepository>();
+                    services.AddHealthChecks()
+                        .AddCheck<SpyderHealthCheck>("nodeSpyder")
+                        .AddSqlServer(ctx.Configuration.GetConnectionString("NodeSpyder"));
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

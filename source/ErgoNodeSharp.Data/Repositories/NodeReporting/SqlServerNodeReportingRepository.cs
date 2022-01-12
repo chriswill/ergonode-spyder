@@ -68,6 +68,18 @@ SELECT [Address]
             }
         }
 
+        public async Task<int> GetVersionRowCount()
+        {
+            string sql = @"
+  SELECT COUNT(DISTINCT([Version]))
+  FROM [dbo].[ActiveNodes] WITH (NOLOCK)  
+";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.ExecuteScalarAsyncWithRetry<int>(sql);
+            }
+        }
+
         public async Task<IEnumerable<GeoSummary>> GetContinentCount()
         {
             string sql = @"
@@ -96,6 +108,18 @@ SELECT [Address]
             }
         }
 
+        public async Task<int> GetCountryRowCount()
+        {
+            string sql = @"
+  SELECT COUNT(DISTINCT(ISNULL([CountryCode],'Unknown')))
+  FROM [dbo].[ActiveNodes] WITH (NOLOCK)   
+";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.ExecuteScalarAsyncWithRetry<int>(sql);
+            }
+        }
+
         public async Task<IEnumerable<GeoSummary>> GetRegionCount(string countryCode, int count = 5)
         {
             string sql = @$"
@@ -108,6 +132,18 @@ SELECT [Address]
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 return await connection.QueryAsyncWithRetry<GeoSummary>(sql, new {countryCode});
+            }
+        }
+
+        public async Task<int> GetRegionRowCount(string countryCode)
+        {
+            string sql = @"
+  SELECT COUNT(DISTINCT(ISNULL([RegionCode],'Unknown')))
+  FROM [dbo].[ActiveNodes] WITH (NOLOCK)   
+";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.ExecuteScalarAsyncWithRetry<int>(sql);
             }
         }
 
@@ -184,6 +220,34 @@ SELECT [Address]
             }
         }
 
+        public async Task<int> GetIspRowCount(string countryCode = null)
+        {
+            if (string.IsNullOrEmpty(countryCode))
+            {
+                string sql = @"
+  SELECT COUNT(DISTINCT(ISNULL([ISP],'Unknown')))
+  FROM [dbo].[ActiveNodes] WITH (NOLOCK)   
+";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    return await connection.ExecuteScalarAsyncWithRetry<int>(sql);
+                }
+            }
+            else
+            {
+                string sql = @"
+  SELECT COUNT(DISTINCT(ISNULL([ISP],'Unknown')))
+  FROM [dbo].[ActiveNodes] WITH (NOLOCK)
+  WHERE CountryCode = @countryCode
+";
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    return await connection.ExecuteScalarAsyncWithRetry<int>(sql, new { countryCode });
+                }
+            }
+
+        }
+
         public async Task<IEnumerable<StringValuePair>> GetDailyCount(int days = 10)
         {
             string sql = @$"
@@ -193,6 +257,18 @@ SELECT [Address]
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 return await connection.QueryAsyncWithRetry<StringValuePair>(sql);
+            }
+        }
+
+        public async Task<int> GetDailyRowCount()
+        {
+            string sql = @"
+  SELECT COUNT(*)
+  FROM [dbo].[NodesByDay] WITH (NOLOCK)  
+";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.ExecuteScalarAsyncWithRetry<int>(sql);
             }
         }
 
@@ -208,6 +284,18 @@ SELECT [Address]
             }
         }
 
+        public async Task<int> GetMonthRowCount()
+        {
+            string sql = @"
+  SELECT COUNT(*)
+  FROM [dbo].[NodesByMonth] WITH (NOLOCK)  
+";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.ExecuteScalarAsyncWithRetry<int>(sql);
+            }
+        }
+
         public async Task<IEnumerable<StringValuePair>> GetWeekCount(int weeks = 12)
         {
             string sql = @$"
@@ -217,6 +305,18 @@ SELECT [Address]
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 return await connection.QueryAsyncWithRetry<StringValuePair>(sql);
+            }
+        }
+
+        public async Task<int> GetWeekRowCount()
+        {
+            string sql = @"
+  SELECT COUNT(*)
+  FROM [dbo].[NodesByWeek] WITH (NOLOCK)  
+";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.ExecuteScalarAsyncWithRetry<int>(sql);
             }
         }
 

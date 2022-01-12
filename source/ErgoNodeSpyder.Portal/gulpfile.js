@@ -24,7 +24,9 @@ function clean(cb) {
 function defaultTask(cb) {
 
     gulp.src('app/css/style.bundle.css').pipe(gulp.dest(targetPath + 'css'));
+    gulp.src('app/css/style.dark.bundle.css').pipe(gulp.dest(targetPath + 'css'));
     gulp.src('app/plugins/global/plugins.bundle.css').pipe(gulp.dest(targetPath + 'css'));
+    gulp.src('app/plugins/global/plugins.dark.bundle.css').pipe(gulp.dest(targetPath + 'css'));
     
     gulp.src('app/js/scripts.bundle.js').pipe(gulp.dest(targetPath + 'js'));
     gulp.src('app/plugins/global/plugins.bundle.js').pipe(gulp.dest(targetPath + 'js'));

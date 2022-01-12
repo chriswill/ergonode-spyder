@@ -1,6 +1,10 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 
+@{
+    bool darkMode = !string.IsNullOrEmpty(Context.Request.Cookies["darkMode"]);
+}
+
 <head>
 	<base href="">
     <title>Node Spyder for Ergo::@ViewBag.Title</title>
@@ -9,12 +13,21 @@
 	
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
 	
-	<link href="~/css/plugins.bundle.css" rel="stylesheet" type="text/css" />
-	<link href="~/css/style.bundle.css" rel="stylesheet" type="text/css" />
+	@if (darkMode)
+	{
+	    <link href="~/css/plugins.dark.bundle.css" rel="stylesheet" type="text/css" />
+	    <link href="~/css/style.dark.bundle.css" rel="stylesheet" type="text/css" />
+	}
+	else
+	{
+	    <link href="~/css/plugins.bundle.css" rel="stylesheet" type="text/css" />
+	    <link href="~/css/style.bundle.css" rel="stylesheet" type="text/css" />
+	}
+    
     @await RenderSectionAsync("styles", required: false)
 </head>
 
-<body id="kt_body" class="header-extended header-fixed header-tablet-and-mobile-fixed">
+<body id="kt_body" class="@(darkMode ? "dark-mode" : string.Empty) header-extended header-fixed header-tablet-and-mobile-fixed">
 	<div class="d-flex flex-column flex-root">		
 		<div class="page d-flex flex-row flex-column-fluid">
 			<div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">

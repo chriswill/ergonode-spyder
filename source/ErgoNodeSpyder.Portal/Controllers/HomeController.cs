@@ -1,7 +1,9 @@
-﻿using ErgoNodeSpyder.Portal.Models;
+﻿using System;
+using ErgoNodeSpyder.Portal.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Http;
 
 namespace ErgoNodeSpyder.Portal.Controllers
 {
@@ -30,6 +32,21 @@ namespace ErgoNodeSpyder.Portal.Controllers
         public IActionResult Api()
         {
             return View();
+        }
+
+        [HttpGet]
+        [Route("set-mode/{mode}")]
+        public IActionResult SetMode(string mode)
+        {
+            if (!string.IsNullOrEmpty(mode) && "dark".Equals(mode))
+            {
+                Response.Cookies.Append("darkMode", "true", new CookieOptions{Expires = DateTimeOffset.UtcNow.AddYears(1)});
+            }
+            else if (!string.IsNullOrEmpty(mode) && "light".Equals(mode))
+            {
+                Response.Cookies.Delete("darkMode");
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

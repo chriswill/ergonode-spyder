@@ -29,6 +29,7 @@
                         <li><a href="#blocks-kept">Blocks kept</a></li>
                         <li><a href="#continents">Continents</a></li>
                         <li><a href="#countries">Countries</a></li>
+                        <li><a href="#country-info">Country info</a></li>
                         <li><a href="#regions">Regions</a></li>
                         <li><a href="#isps">ISPs</a></li>
                         <li><a href="#isp-locations">ISP locations</a></li>
@@ -215,7 +216,7 @@
                     <h5 id="continents">Continents</h5>
                     <p>The Continents endpoint provides an ordered list of continents where Ergo nodes operate.</p>
                     <h6>Request</h6>
-                    <code>GET /api/nodes/continents</code>
+                    <code>GET /api/nodes/geo/continents</code>
                     <h6 class="mt-3">Response</h6>
                     <p>The data element in the jsonapi document will be an array of geography value pairs.</p>
                     <p>The following fields appear in the geography value pair:</p>
@@ -235,7 +236,7 @@
                     <h5 id="countries">Countries</h5>
                     <p>The Countries endpoint provides an ordered list of countries where Ergo nodes operate.</p>
                     <h6>Request</h6>
-                    <code>GET /api/nodes/countries?count=5</code>
+                    <code>GET /api/nodes/geo/countries?count=5</code>
                     <p class="mt-2">To limit the number of return values, include the count parameter. If not included, the count will default to 5.</p>
                     <h6 class="mt-3">Response</h6>
                     <p>The data element in the jsonapi document will be an array of geography value pairs.</p>
@@ -253,10 +254,31 @@
     "value": 29
 }
 </code></pre>
+                    <h5 id="country-info">Country info</h5>
+                    <p>The Country info endpoint provides an ordered list of cities and regions where Ergo nodes operate within a specified country.</p>
+                    <h6>Request</h6>
+                    <code>GET /api/nodes/geo/country-info/de</code>
+                    <p class="mt-2">In this example, 'de' is a country code. You must supply a valid ISO two letter country code.</p>
+                    <h6 class="mt-3">Response</h6>
+                    <p>The data element in the jsonapi document will be an array of country info objects.</p>
+                    <p>The following fields appear in the country info objects:</p>
+                    <ul>
+                        <li><strong>region:</strong> The region of this geographic location</li>
+                        <li><strong>city:</strong> The city of this geographic location</li>
+                        <li><strong>count:</strong> The number of nodes currently operating in this location</li>
+                    </ul>
+                    <h6>Sample</h6>
+                    <pre><code>
+{
+    "region": "BY",
+    "city": "Gunzenhausen",
+    "count": 12
+}
+</code></pre>
                     <h5 id="regions">Regions</h5>
                     <p>The Regions endpoint provides an ordered list of regions where Ergo nodes operate within a specified country.</p>
                     <h6>Request</h6>
-                    <code>GET /api/nodes/regions?countryCode=DE&count=5</code>
+                    <code>GET /api/nodes/geo/regions?countryCode=DE&count=5</code>
                     <p class="mt-2">You must provide a country code as a query parameter. To limit the number of return values, include the count parameter. If not included, the count will default to 5.</p>
                     <h6 class="mt-3">Response</h6>
                     <p>The data element in the jsonapi document will be an array of geography value pairs. In all responses, the name and code fields are identical.</p>
@@ -277,8 +299,8 @@
                     <h5 id="isps">ISPs</h5>
                     <p>The ISPs endpoint provides an ordered list of ISPs where Ergo nodes operate.</p>
                     <h6>Request</h6>
-                    <code>GET /api/nodes/isps?countryCode=us&count=5</code>
-                    <p class="mt-2">The countryCode parameter is optional.  If supplied, it will limit the return result to the specified country. 
+                    <code>GET /api/nodes/geo/isps?countryCode=de&count=5</code>
+                    <p class="mt-2">The countryCode parameter is optional. If supplied, it will limit the return result to the specified country. 
                         To limit the number of return values, include the count parameter. If not included, the count will default to 5.</p>
                     <h6 class="mt-3">Response</h6>
                     <p>The data element in the jsonapi document will be an array of key value pairs.</p>
@@ -297,8 +319,8 @@
                     <h5 id="isp-locations">ISP locations</h5>
                     <p>The ISP locations endpoint provides a list of latitude/longitude pairs where Ergo nodes operate in a specified country.</p>
                     <h6>Request</h6>
-                    <code>GET /api/nodes/isp-locations/us</code>
-                    <p class="mt-2">In this example, 'us' is a country code. You must supply a valid ISO two letter country code.</p>
+                    <code>GET /api/nodes/geo/isp-locations/de</code>
+                    <p class="mt-2">In this example, 'de' is a country code. You must supply a valid ISO two letter country code.</p>
                     <h6 class="mt-3">Response</h6>
                     <p>The data element in the jsonapi document will be an array of latitude/longitude pairs.</p>
                     <p>The following fields appear in the latitude/longitude pair:</p>

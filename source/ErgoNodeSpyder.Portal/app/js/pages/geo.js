@@ -132,6 +132,7 @@
                     td2.setAttribute('class', 'ps-0');
                     let a = document.createElement('a');
                     a.setAttribute('href', `/geo/country/${item.code}`);
+                    a.setAttribute('title', 'View details');
                     a.setAttribute('class', 'text-gray-800 fw-bolder text-hover-primary mb-1 fs-6 text-start pe-0');
                     a.appendChild(document.createTextNode(item.name));
                     td2.appendChild(a);

@@ -160,7 +160,7 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
         [Route("geo/isp-locations/{countryCode}")]
         public async Task<IActionResult> IspLocations(string countryCode)
         {
-            if (!string.IsNullOrEmpty(countryCode) && countryCode.Length != 2)
+            if (string.IsNullOrEmpty(countryCode) || countryCode.Length != 2)
             {
                 ErrorMessage errorMessage = new ErrorMessage();
                 errorMessage.Status = "400";
@@ -170,16 +170,44 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
                 return BadRequest(errorResponse);
             }
 
-            JsonApiResponse<LocationInfo> response = new JsonApiResponse<LocationInfo>();
+            JsonApiResponse<Location> response = new JsonApiResponse<Location>();
 
             if (httpContextAccessor.HttpContext != null)
             {
-                logger.LogDebug("Received GetNodeInfos request from " + httpContextAccessor.HttpContext.Request.Host);
+                logger.LogDebug("Received IspLocations request from " + httpContextAccessor.HttpContext.Request.Host);
                 response.Links.First = httpContextAccessor.HttpContext.Request.GetEncodedUrl();
                 response.Links.Self = httpContextAccessor.HttpContext.Request.GetEncodedUrl();
             }
 
             response.Data = await repository.GetIspLocations(countryCode);
+            response.Meta.TotalRecords = response.Data.Count();
+
+            return Ok(response);
+        }
+
+        [Route("geo/country-info/{countryCode}")]
+        public async Task<IActionResult> CountryInfo(string countryCode)
+        {
+            if (string.IsNullOrEmpty(countryCode) || countryCode.Length != 2)
+            {
+                ErrorMessage errorMessage = new ErrorMessage();
+                errorMessage.Status = "400";
+                errorMessage.Title = "Invalid request";
+                errorMessage.Detail = "Invalid country code supplied";
+                ErrorResponse errorResponse = new ErrorResponse(errorMessage);
+                return BadRequest(errorResponse);
+            }
+
+            JsonApiResponse<CountryInfo> response = new JsonApiResponse<CountryInfo>();
+
+            if (httpContextAccessor.HttpContext != null)
+            {
+                logger.LogDebug("Received CountryInfo request from " + httpContextAccessor.HttpContext.Request.Host);
+                response.Links.First = httpContextAccessor.HttpContext.Request.GetEncodedUrl();
+                response.Links.Self = httpContextAccessor.HttpContext.Request.GetEncodedUrl();
+            }
+
+            response.Data = await repository.GetCountryInfo(countryCode);
             response.Meta.TotalRecords = response.Data.Count();
 
             return Ok(response);

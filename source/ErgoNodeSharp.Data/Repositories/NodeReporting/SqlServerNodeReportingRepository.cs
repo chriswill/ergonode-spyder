@@ -260,16 +260,31 @@ SELECT [Address]
 
         }
 
-        public async Task<IEnumerable<LocationInfo>> GetIspLocations(string countryCode)
+        public async Task<IEnumerable<Location>> GetIspLocations(string countryCode)
         {
-            string sql = @$"
-  SELECT Latitude, Longitude
+            string sql = @"
+  SELECT DISTINCT Latitude, Longitude
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
   WHERE CountryCode = @countryCode  
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                return await connection.QueryAsyncWithRetry<LocationInfo>(sql, new { countryCode });
+                return await connection.QueryAsyncWithRetry<Location>(sql, new { countryCode });
+            }
+        }
+
+        public async Task<IEnumerable<CountryInfo>> GetCountryInfo(string countryCode)
+        {
+            string sql = @"
+  SELECT IsNull(RegionName, 'Unknown') as [Region], IsNull(City, 'Unknown') as [City], Count(*) as [Count]
+  FROM [dbo].[ActiveNodes] WITH (NOLOCK)
+  WHERE CountryCode = @countryCode 
+  GROUP BY RegionName, City
+  ORDER BY Count(*) DESC, RegionName ASC
+";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.QueryAsyncWithRetry<CountryInfo>(sql, new { countryCode });
             }
         }
 

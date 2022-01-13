@@ -1,6 +1,6 @@
 ﻿@model ErgoNodeSpyder.Portal.Models.Geo.CountryViewModel
 @{
-    ViewData["Title"] = "Country: " + Model?.CountryCode;
+    ViewData["Title"] = Model?.CountryName;
 }
 
 <div id="kt_content_container" class="d-flex flex-column-fluid align-items-start container-xxl">
@@ -9,23 +9,98 @@
             <div class="col-md-8 col-xl-8 mb-md-5 mb-xxl-10">
                 <div class="card overflow-hidden mb-5 mb-lg-10">
                     <div class="card-header card-header-stretch">
-                        <h3 class="card-title">@Model?.CountryName</h3>
-                        <div class="card-toolbar">
-                            
+                        <div class="card-title">
+                            <span class="card-icon">
+                                <img src="/images/flags/@(Model?.CountryCode).svg" class="me-1 w-25px" style="border-radius: 4px" alt="" />
+                            </span>
+                            <h3 class="card-label">@Model?.CountryName</h3>
                         </div>
                     </div>
                     <div class="card-body pt-5 ps-6">
-                        <div id="country-map" class="w-100 h-350px"></div>
+                        <div id="country-map" class="w-100 h-500px"></div>
                     </div>
                 </div>
             </div>
             <div class="col-md-4 col-xl-4 mb-md-5 mb-xxl-10">
-                <div class="card overflow-hidden mb-5 mb-lg-10">
-                    <div class="card-header card-header-stretch">
-                        
+                <div class="row">
+                    <div class="col-md-6 col-xl-6">
+                        <div class="card overflow-hidden mb-5 mb-lg-10">
+                            <div class="card-header card-header-stretch">
+                                <div class="card-title">
+                                    <span class="card-icon">
+                                        <img src="/images/flags/@(Model?.CountryCode).svg" class="me-1 w-25px" style="border-radius: 4px" alt="" />
+                                    </span>
+                                    <h3 class="card-label">Nodes</h3>
+                                </div>
+                            </div>
+                            <div class="card-body pt-5 ps-6">
+                                <div class="mb-4 px-9">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span id="country-node-count"
+                                              class="fs-2hx fw-bolder text-gray-800 me-2 lh-1"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body pt-5 ps-6">
-                        
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card overflow-hidden mb-5 mb-lg-10">
+                            <div class="card-header card-header-stretch">
+                                <div class="card-title">
+                                    <span class="card-icon">
+                                        <img src="/images/flags/@(Model?.CountryCode).svg" class="me-1 w-25px" style="border-radius: 4px" alt="" />
+                                    </span>
+                                    <h3 class="card-label">Locations</h3>
+                                </div>
+                            </div>
+                            <div class="card-body pt-5 ps-6">
+                                <div class="table-responsive">
+                                    <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4 my-0">
+                                        <thead>
+                                        <tr class="fs-7 fw-bolder text-gray-500 border-bottom-0">
+                                            <th class="ps-0">Region</th>
+                                            <th class="ps-0 min-w-140px">City</th>
+                                            <th class="text-end ps-0">Nodes</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="location-widget">
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card overflow-hidden mb-5 mb-lg-10">
+                            <div class="card-header card-header-stretch">
+                                <div class="card-title">
+                                    <span class="card-icon">
+                                        <img src="/images/flags/@(Model?.CountryCode).svg" class="me-1 w-25px" style="border-radius: 4px" alt=""/>
+                                    </span>
+                                    <h3 class="card-label">Internet Service Providers</h3>
+                                </div>
+                            </div>
+                            <div class="card-body pt-5 ps-6">
+                                <div class="table-responsive">
+                                    <table class="table table-row-dashed table-row-gray-300 align-middle gs-0 gy-4 my-0">
+                                        <thead>
+                                        <tr class="fs-7 fw-bolder text-gray-500 border-bottom-0">
+                                            <th class="ps-0 min-w-140px">ISP</th>
+                                            <th class="text-end ps-0">Nodes</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="isp-widget">
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -61,8 +136,7 @@
         am5.ready(function() {
 
             var root = am5.Root.new('country-map');
-            var colors = am5.ColorSet.new(root, {});
-
+            
             root.setThemes([
                 am5themes_Animated.new(root)
             ]);
@@ -77,46 +151,53 @@
             var polygonSeries = chart.series.push(
                 am5map.MapPolygonSeries.new(root,
                     {
-                        geoJSON: am5geodata_@(Model.MapName)
+                        geoJSON: am5geodata_@(Model?.MapName)
                     })
             );
-
 
             // Set clicking on "water" to zoom out
             chart.chartContainer
                 .get('background')
                 .events.on('click',
-                    function() {
+                    function () {
                         chart.goHome();
                     });
 
             // Make stuff animate on load
             chart.appear(1000, 100);
-        });
 
-        $.get('/api/nodes/geo/isplocations/@(Model.CountryCode)', function (data) {
-            const length = data.data.length;
+            $.get('/api/nodes/geo/isp-locations/@(Model?.CountryCode)' , function (data) {
+                const length = data.data.length;
 
-            if (length > 0) {
-                    
-                var pointSeries = chart.series.push(
-                    am5map.MapPointSeries.new(root, {
-                        
-                    })
-                );
+                if (length > 0) {
 
-                pointSeries.bullets.push(function() {
-                    return am5.Bullet.new(root, {
-                        sprite: am5.Circle.new(root, {
-                            radius: 5,
-                            fill: am5.color(0xff0000)
+                    var pointSeries = chart.series.push(
+                        am5map.MapPointSeries.new(root, {
+
                         })
+                    );
+
+                    pointSeries.bullets.push(function () {
+                        return am5.Bullet.new(root, {
+                            sprite: am5.Circle.new(root, {
+                                radius: 5,
+                                fill: am5.color(0xFFAC1C)
+                            })
+                        });
                     });
-                });
-            }
+
+                    for (var i = 0; i < length; i++) {
+                        pointSeries.pushDataItem(data.data[i]);
+                    }
+
+                }
+            });
+        });
+        
+        $(document).ready(function() {
+            getIsps('@(Model?.CountryCode)');
+            getRegions('@(Model?.CountryCode)');
         });
 
-            
-        
     </script>
 }

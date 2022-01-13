@@ -50,6 +50,28 @@
 			"response": []
 		},
 		{
+			"name": "Blocks kept",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://ergo.nodespyder.io/api/nodes/blocks-kept",
+					"protocol": "https",
+					"host": [
+						"ergo",
+						"nodespyder",
+						"io"
+					],
+					"path": [
+						"api",
+						"nodes",
+						"blocks-kept"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "State types",
 			"request": {
 				"method": "GET",
@@ -88,28 +110,6 @@
 						"api",
 						"nodes",
 						"verifying"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Blocks kept",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "https://ergo.nodespyder.io/api/nodes/blocks-kept",
-					"protocol": "https",
-					"host": [
-						"ergo",
-						"nodespyder",
-						"io"
-					],
-					"path": [
-						"api",
-						"nodes",
-						"blocks-kept"
 					]
 				}
 			},
@@ -168,6 +168,30 @@
 			"response": []
 		},
 		{
+			"name": "Country info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://ergo.nodespyder.io/api/nodes/geo/country-info/de",
+					"protocol": "https",
+					"host": [
+						"ergo",
+						"nodespyder",
+						"io"
+					],
+					"path": [
+						"api",
+						"nodes",
+						"geo",
+						"country-info",
+						"de"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Regions",
 			"request": {
 				"method": "GET",
@@ -206,7 +230,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://ergo.nodespyder.io/api/nodes/geo/isps?count=10",
+					"raw": "https://ergo.nodespyder.io/api/nodes/geo/isps?countryCode=de&count=10",
 					"protocol": "https",
 					"host": [
 						"ergo",
@@ -221,9 +245,37 @@
 					],
 					"query": [
 						{
+							"key": "countryCode",
+							"value": "de"
+						},
+						{
 							"key": "count",
 							"value": "10"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ISP locations",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://ergo.nodespyder.io/api/nodes/geo/isp-locations/us",
+					"protocol": "https",
+					"host": [
+						"ergo",
+						"nodespyder",
+						"io"
+					],
+					"path": [
+						"api",
+						"nodes",
+						"geo",
+						"isp-locations",
+						"us"
 					]
 				}
 			},

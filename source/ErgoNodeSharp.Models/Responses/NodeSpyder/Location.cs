@@ -1,6 +1,6 @@
 ﻿namespace ErgoNodeSharp.Models.Responses.NodeSpyder
 {
-    public class LocationInfo
+    public class Location
     {
         public double Latitude { get; set; }
 

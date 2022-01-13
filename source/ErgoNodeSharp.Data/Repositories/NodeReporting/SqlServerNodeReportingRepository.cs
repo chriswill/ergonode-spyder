@@ -54,13 +54,25 @@ SELECT [Address]
             }
         }
 
+        public async Task<int> GetNodeInfoCount()
+        {
+            string sql = @"
+  SELECT COUNT(*)
+  FROM [dbo].[ActiveNodes] WITH (NOLOCK)  
+";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.ExecuteScalarAsyncWithRetry<int>(sql);
+            }
+        }
+
         public async Task<IEnumerable<StringValuePair>> GetVersionCount(int count = 5)
         {
             string sql = @$"
   SELECT TOP ({count}) [Version] as [Key], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
   GROUP BY [Version]
-  ORDER BY Count(*) DESC
+  ORDER BY Count(*) DESC, [Version] ASC
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -86,7 +98,7 @@ SELECT [Address]
   SELECT ISNULL([ContinentCode],'Unknown') as [Code], ISNULL([ContinentName],'Unknown') as [Name], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
   GROUP BY [ContinentCode], [ContinentName]
-  ORDER BY Count(*) DESC
+  ORDER BY Count(*) DESC, [ContinentName] ASC
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -100,7 +112,7 @@ SELECT [Address]
   SELECT TOP ({count}) ISNULL([CountryCode],'Unknown') as [Code], ISNULL([CountryName],'Unknown') as [Name], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK) 
   GROUP BY [CountryCode], [CountryName]
-  ORDER BY Count(*) DESC
+  ORDER BY Count(*) DESC, [CountryName] ASC
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -127,7 +139,7 @@ SELECT [Address]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
   WHERE CountryCode = @countryCode
   GROUP BY [RegionCode], [RegionName]
-  ORDER BY Count(*) DESC
+  ORDER BY Count(*) DESC, [RegionName] ASC
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -153,7 +165,7 @@ SELECT [Address]
   SELECT [StateType] as [Key], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
   GROUP BY [StateType]
-  ORDER BY Count(*) DESC
+  ORDER BY Count(*) DESC, [StateType] ASC
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -167,7 +179,7 @@ SELECT [Address]
   SELECT [VerifyingTransactions] as [Key], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
   GROUP BY [VerifyingTransactions]
-  ORDER BY Count(*) DESC
+  ORDER BY Count(*) DESC, [VerifyingTransactions] ASC
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -197,7 +209,7 @@ SELECT [Address]
   SELECT TOP ({count}) ISNULL([ISP],'Unknown') as [Key], Count(*) as [Value]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK) 
   GROUP BY [ISP]
-  ORDER BY Count(*) DESC
+  ORDER BY Count(*) DESC, ISNULL([ISP],'Unknown') ASC
 ";
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
@@ -211,7 +223,7 @@ SELECT [Address]
   FROM [dbo].[ActiveNodes] WITH (NOLOCK)
   WHERE CountryCode = @countryCode
   GROUP BY [ISP]
-  ORDER BY Count(*) DESC
+  ORDER BY Count(*) DESC, ISNULL([ISP],'Unknown') ASC
 ";
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {

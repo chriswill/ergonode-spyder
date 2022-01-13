@@ -7,6 +7,7 @@ namespace ErgoNodeSharp.Data
     public interface INodeReportingRepository
     {
         Task<IEnumerable<NodeInfo>> GetNodeInfos();
+        Task<int> GetNodeInfoCount();
 
         Task<IEnumerable<StringValuePair>> GetVersionCount(int count = 5);
         Task<int> GetVersionRowCount();

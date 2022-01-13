@@ -43,8 +43,7 @@
                         <p>The content type of the response for all endpoints is application/json</p>
                         <p>The json document follows the <a href="https://jsonapi.org/">json api specification</a>. The <strong>jsonapi</strong>, <strong>meta</strong>, and <strong>links</strong>
                             sections provide information about the document. The document payload will be found in the <strong>data</strong> section.</p>
-<pre>
-<code>
+<pre><code>
 {
     "jsonapi": {
         "version": "1.0"
@@ -73,9 +72,7 @@
         ... omitted
     ]
 }
-</code>
-
-</pre>
+</code></pre>
                         <h4>Postman</h4>
                         <p>
                             You can download a <a href="https://www.postman.com">Postman</a> collection <a href="/NodeSpyder.postman_collection.json">here</a>.
@@ -178,12 +175,7 @@
                             <li><strong>value:</strong> The number of nodes currently operating that state type configuration</li>
                         </ul>
                         <h6>Sample</h6>
-                        <pre><code>
-{
-    "key": "Utxo",
-    "value": 77
-}
-</code></pre>
+                        <pre><code>{ "key": "Utxo", "value": 77 }</code></pre>
                         <h5 id="verifying">Verifying</h5>
                         <p>The Verifying endpoint provides an list of Ergo node verification status configuration. A 
                             verification status configuration is either true or false.
@@ -198,12 +190,7 @@
                             <li><strong>value:</strong> The number of nodes currently operating that verification status configuration</li>
                         </ul>
                         <h6>Sample</h6>
-                        <pre><code>
-{
-    "key": true,
-    "value": 77
-}
-</code></pre>
+                        <pre><code>{ "key": true,"value": 77 }</code></pre>
                     <h5 id="blocks-kept">Blocks kept</h5>
                     <p>The Blocks kept endpoint provides an list of Ergo node blocks kept configurations. A 
                         blocks kept configurations lists the number of blocks kept, or reports that all blocks are kept (-1).

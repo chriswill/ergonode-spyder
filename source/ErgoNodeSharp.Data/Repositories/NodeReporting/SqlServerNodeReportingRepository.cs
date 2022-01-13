@@ -260,6 +260,19 @@ SELECT [Address]
 
         }
 
+        public async Task<IEnumerable<LocationInfo>> GetIspLocations(string countryCode)
+        {
+            string sql = @$"
+  SELECT Latitude, Longitude
+  FROM [dbo].[ActiveNodes] WITH (NOLOCK)
+  WHERE CountryCode = @countryCode  
+";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                return await connection.QueryAsyncWithRetry<LocationInfo>(sql, new { countryCode });
+            }
+        }
+
         public async Task<IEnumerable<StringValuePair>> GetDailyCount(int days = 10)
         {
             string sql = @$"

@@ -31,6 +31,7 @@
                         <li><a href="#countries">Countries</a></li>
                         <li><a href="#regions">Regions</a></li>
                         <li><a href="#isps">ISPs</a></li>
+                        <li><a href="#isp-locations">ISP locations</a></li>
                         <li><a href="#daily-count">Daily node count</a></li>
                         <li><a href="#weekly-count">Weekly node count</a></li>
                         <li><a href="#monthly-count">Monthly node count</a></li>
@@ -276,8 +277,9 @@
                     <h5 id="isps">ISPs</h5>
                     <p>The ISPs endpoint provides an ordered list of ISPs where Ergo nodes operate.</p>
                     <h6>Request</h6>
-                    <code>GET /api/nodes/isps?count=5</code>
-                    <p class="mt-2">To limit the number of return values, include the count parameter. If not included, the count will default to 5.</p>
+                    <code>GET /api/nodes/isps?countryCode=us&count=5</code>
+                    <p class="mt-2">The countryCode parameter is optional.  If supplied, it will limit the return result to the specified country. 
+                        To limit the number of return values, include the count parameter. If not included, the count will default to 5.</p>
                     <h6 class="mt-3">Response</h6>
                     <p>The data element in the jsonapi document will be an array of key value pairs.</p>
                     <p>The following fields appear in the key value pair:</p>
@@ -292,7 +294,25 @@
     "value": 35
 }
 </code></pre>
-
+                    <h5 id="isp-locations">ISP locations</h5>
+                    <p>The ISP locations endpoint provides a list of latitude/longitude pairs where Ergo nodes operate in a specified country.</p>
+                    <h6>Request</h6>
+                    <code>GET /api/nodes/isp-locations/us</code>
+                    <p class="mt-2">In this example, 'us' is a country code. You must supply a valid ISO two letter country code.</p>
+                    <h6 class="mt-3">Response</h6>
+                    <p>The data element in the jsonapi document will be an array of latitude/longitude pairs.</p>
+                    <p>The following fields appear in the latitude/longitude pair:</p>
+                    <ul>
+                        <li><strong>latitude:</strong> The latitude value of the location</li>
+                        <li><strong>longitude:</strong> The longitude value of the location</li>
+                    </ul>
+                    <h6>Sample</h6>
+                    <pre><code>
+{
+    "latitude": 34.01301956176758,
+    "longitude": -117.85394287109376
+}
+</code></pre>
                     <h5 id="daily-count">Daily node count</h5>
                     <p>The Daily node count endpoint provides an ordered list of days and the number of Ergo nodes found to be active on that day.</p>
                     <h6>Request</h6>

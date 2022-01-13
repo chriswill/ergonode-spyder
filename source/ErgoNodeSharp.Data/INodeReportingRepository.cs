@@ -29,6 +29,8 @@ namespace ErgoNodeSharp.Data
         Task<IEnumerable<StringValuePair>> GetIspCount(string countryCode = null, int count = 10);
         Task<int> GetIspRowCount(string countryCode = null);
 
+        Task<IEnumerable<LocationInfo>> GetIspLocations(string countryCode);
+
         Task<IEnumerable<StringValuePair>> GetDailyCount(int days = 10);
         Task<int> GetDailyRowCount();
 

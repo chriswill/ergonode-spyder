@@ -157,6 +157,34 @@ namespace ErgoNodeSpyder.Portal.Controllers.API
             return Ok(response);
         }
 
+        [Route("geo/isp-locations/{countryCode}")]
+        public async Task<IActionResult> IspLocations(string countryCode)
+        {
+            if (!string.IsNullOrEmpty(countryCode) && countryCode.Length != 2)
+            {
+                ErrorMessage errorMessage = new ErrorMessage();
+                errorMessage.Status = "400";
+                errorMessage.Title = "Invalid request";
+                errorMessage.Detail = "Invalid country code supplied";
+                ErrorResponse errorResponse = new ErrorResponse(errorMessage);
+                return BadRequest(errorResponse);
+            }
+
+            JsonApiResponse<LocationInfo> response = new JsonApiResponse<LocationInfo>();
+
+            if (httpContextAccessor.HttpContext != null)
+            {
+                logger.LogDebug("Received GetNodeInfos request from " + httpContextAccessor.HttpContext.Request.Host);
+                response.Links.First = httpContextAccessor.HttpContext.Request.GetEncodedUrl();
+                response.Links.Self = httpContextAccessor.HttpContext.Request.GetEncodedUrl();
+            }
+
+            response.Data = await repository.GetIspLocations(countryCode);
+            response.Meta.TotalRecords = response.Data.Count();
+
+            return Ok(response);
+        }
+
         [Route("state-types")]
         public async Task<IActionResult> StateTypes()
         {

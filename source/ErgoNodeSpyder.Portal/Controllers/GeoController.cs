@@ -29,16 +29,16 @@ namespace ErgoNodeSpyder.Portal.Controllers
         {
             CountryViewModel model = new CountryViewModel();
 
-            string countyName = await reportingRepository.GetCountyName(countryCode);
+            string countyName = await reportingRepository.GetCountryName(countryCode);
 
             if (string.IsNullOrEmpty(countyName))
             {
                 ErrorMessage errorMessage = new ErrorMessage();
-                errorMessage.Status = "400";
-                errorMessage.Title = "Invalid request";
-                errorMessage.Detail = "Invalid country code supplied";
+                errorMessage.Status = "404";
+                errorMessage.Title = "Not found";
+                errorMessage.Detail = "No data available for that country code";
                 ErrorResponse errorResponse = new ErrorResponse(errorMessage);
-                return BadRequest(errorResponse);
+                return NotFound(errorResponse);
             }
 
             model.CountryCode = countryCode;

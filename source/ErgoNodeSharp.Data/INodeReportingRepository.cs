@@ -42,6 +42,6 @@ namespace ErgoNodeSharp.Data
         Task<IEnumerable<StringValuePair>> GetWeekCount(int weeks = 12);
         Task<int> GetWeekRowCount();
 
-        Task<string> GetCountyName(string countryCode);
+        Task<string> GetCountryName(string countryCode);
     }
 }

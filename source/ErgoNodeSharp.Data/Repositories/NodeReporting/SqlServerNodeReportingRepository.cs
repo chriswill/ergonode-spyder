@@ -360,7 +360,7 @@ SELECT [Address]
             }
         }
 
-        public async Task<string> GetCountyName(string countryCode)
+        public async Task<string> GetCountryName(string countryCode)
         {
 
             string sql = @"

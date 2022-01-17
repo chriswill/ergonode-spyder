@@ -291,8 +291,9 @@ SELECT [Address]
         public async Task<IEnumerable<StringValuePair>> GetDailyCount(int days = 10)
         {
             string sql = @$"
-  SELECT TOP ({days}) CONVERT(varchar, [Day], 23) as [Key], NodeCount as [Value]
-  FROM [dbo].[NodesByDay] WITH (NOLOCK)  
+  SELECT CONVERT(varchar, [Day], 23) as [Key], NodeCount as [Value]
+  FROM [dbo].[NodesByDay] WITH (NOLOCK)
+  WHERE [Day] > DATEADD(day, -{days}, CAST (GetUTCDate() as date)) 
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -315,8 +316,9 @@ SELECT [Address]
         public async Task<IEnumerable<StringValuePair>> GetMonthCount(int months = 6)
         {
             string sql = @$"
-  SELECT TOP ({months}) (Cast([Year] as [varchar](4)) + '-' + FORMAT([Month], 'd2')) as [Key], NodeCount as [Value]
-  FROM [dbo].[NodesByMonth] WITH (NOLOCK)  
+  SELECT (Cast([Year] as [varchar](4)) + '-' + FORMAT([Month], 'd2')) as [Key], NodeCount as [Value]
+  FROM [dbo].[NodesByMonth] WITH (NOLOCK)
+  WHERE DATEFROMPARTS([YEAR], [MONTH], 1) >= DATEADD(month, -{months}, Cast(GETUTCDATE() as date))
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -339,8 +341,9 @@ SELECT [Address]
         public async Task<IEnumerable<StringValuePair>> GetWeekCount(int weeks = 12)
         {
             string sql = @$"
-  SELECT TOP ({weeks}) CONVERT([varchar], DATEADD(wk, DATEDIFF(wk, 6, DATEFROMPARTS([Year], 1, 1)) + ([Week]-1), 6),23) as [Key], NodeCount as [Value]
-  FROM [dbo].[NodesByWeek] WITH (NOLOCK)  
+  SELECT CONVERT([varchar], DATEADD(wk, DATEDIFF(wk, 6, DATEFROMPARTS([Year], 1, 1)) + ([Week]-1), 6),23) as [Key], NodeCount as [Value]
+  FROM [dbo].[NodesByWeek] WITH (NOLOCK)
+  WHERE CAST(DATEADD(wk, DATEDIFF(wk, 6, DATEFROMPARTS([Year], 1, 1)) + ([Week]-1), 6) as date) >= DATEADD(day, -{weeks}, CAST (GetUTCDate() as date))
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {

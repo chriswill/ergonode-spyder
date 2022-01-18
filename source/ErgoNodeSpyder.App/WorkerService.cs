@@ -228,17 +228,22 @@ namespace ErgoNodeSpyder.App
         {
             logger.LogError("Connection failed to {0}", address);
             await nodeRepository.RecordFailedConnection(address);
-            bool result = getPeerRequests.TryRemove(address, out _);
-            if (!result)
-            {
-                logger.LogDebug("Unable to remove {0} from Peer requests list", address);
-            }
-            result = nodeConnections.TryRemove(address, out NodeConnection? nodeConnection);
+            getPeerRequests.TryRemove(address, out _);
+
+            bool result = nodeConnections.TryRemove(address, out NodeConnection? nodeConnection);
             if (!result)
             {
                 logger.LogDebug("Unable to remove {0} from Node connections list", address);
             }
-            nodeConnection?.Dispose();
+
+            if (nodeConnection != null)
+            {
+                nodeConnection.OnDataReceived -= NodeConnectionOnDataReceived;
+                nodeConnection.OnConnectionFailed -= NodeConnection_OnConnectionFailed;
+                nodeConnection.Dispose();
+                nodeConnection = null;
+            }
+            
         }
 
         public override Task StopAsync(CancellationToken cancellationToken)
@@ -278,7 +283,7 @@ namespace ErgoNodeSpyder.App
                     {
                         PeersMessage peersMessage = (PeersMessage)nodeMessage;
                         logger.LogInformation("Received {0} from {1}", nodeMessage, ipAddress);
-                        await nodeRepository.AddUpdateNodes(peersMessage.Peers, ipAddress);
+                        await nodeRepository.AddUpdatePeers(peersMessage.Peers, ipAddress);
                     }
                     else
                     {
@@ -302,11 +307,11 @@ namespace ErgoNodeSpyder.App
                 {
                     nodeConnection.Disconnect();
                     await NodeConnection_OnConnectionFailed(ipAddress);
-                    logger.LogWarning("Node {0} was disconnected because it would not respond with a Peers message", ipAddress);
+                    logger.LogWarning("Node {ipAddress} was disconnected because it would not respond with a Peers message", ipAddress);
                     return;
                 }
 
-                await nodeRepository.AddUpdateNode(receivedHandshake.PeerSpec);
+                await nodeRepository.RecordHandshake(receivedHandshake.PeerSpec);
 
                 //this is a handshake
                 HandshakeMessage handshakeMessage = HandshakeMessage.CreateHandshake(ergoConfiguration, networkConfiguration);
@@ -320,7 +325,7 @@ namespace ErgoNodeSpyder.App
                 INodeMessage getPeersMessage = new GetPeersMessage();
                 getPeersMessage.SetNetworkType(ergoConfiguration.NetworkType);
                 byte[] bytes = getPeersMessage.Serialize();
-                logger.LogInformation("Sending {0} message to {1}", getPeersMessage, ipAddress);
+                logger.LogInformation("Sending {peersMessage} message to {ipAddress}", getPeersMessage, ipAddress);
                 await nodeConnection.SendData(bytes);
 
                 if (peerRequestsExist)
@@ -338,19 +343,16 @@ namespace ErgoNodeSpyder.App
 
         private void DisconnectNode(NodeConnection nodeConnection, string ipAddress)
         {
-            logger.LogInformation("Disconnecting from {0}", ipAddress);
-            bool result = getPeerRequests.TryRemove(ipAddress, out _);
+            logger.LogInformation("Disconnecting from {ipAddress}", ipAddress);
+            getPeerRequests.TryRemove(ipAddress, out _);
+
+            bool result = nodeConnections.TryRemove(ipAddress, out _);
             if (!result)
             {
-                logger.LogDebug("Unable to remove {0} from Peer requests list", ipAddress);
+                logger.LogDebug("Unable to remove {ipAddress} from Node connections list", ipAddress);
             }
-
-            result = nodeConnections.TryRemove(ipAddress, out _);
-            if (!result)
-            {
-                logger.LogDebug("Unable to remove {0} from Node connections list", ipAddress);
-            }
-
+            nodeConnection.OnDataReceived -= NodeConnectionOnDataReceived;
+            nodeConnection.OnConnectionFailed -= NodeConnection_OnConnectionFailed;
             nodeConnection.Disconnect();
             nodeConnection.Dispose();
         }

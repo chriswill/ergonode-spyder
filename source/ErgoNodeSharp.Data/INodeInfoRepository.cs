@@ -15,9 +15,9 @@ namespace ErgoNodeSharp.Data
 
         public Task<IEnumerable<string>> GetAddressesForGeoLookup(int topN = 10);
 
-        public Task AddUpdateNode(PeerSpec node);
+        public Task RecordHandshake(PeerSpec node);
 
-        public Task AddUpdateNodes(IEnumerable<PeerSpec> nodes, string address);
+        public Task AddUpdatePeers(IEnumerable<PeerSpec> nodes, string address);
 
         public Task RecordFailedConnection(string address);
 

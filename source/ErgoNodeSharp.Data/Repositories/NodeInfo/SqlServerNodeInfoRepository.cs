@@ -32,8 +32,8 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
   SELECT Count(*)
   FROM [dbo].[Nodes]
   WHERE PublicIP = 1
-     AND (DatePeersQueried IS NULL OR DatePeersQueried < DATEADD(DAY, -1, GETUTCDATE()))
-     AND (DateContactAttempted IS NULL OR DateContactAttempted < DATEADD(DAY, -1, GETUTCDATE()))  
+     AND (DateHandshake IS NULL OR DateHandshake < DATEADD(HOUR, -18, GETUTCDATE()))
+     AND (DateContactAttempted IS NULL OR DateContactAttempted < DATEADD(HOUR, -18, GETUTCDATE()))  
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -48,8 +48,8 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
   SELECT TOP ({topN}) [Address], [Port]
   FROM [dbo].[Nodes]
   WHERE PublicIP = 1
-     AND (DatePeersQueried IS NULL OR DatePeersQueried < DATEADD(DAY, -1, GETUTCDATE()))
-     AND (DateContactAttempted IS NULL OR DateContactAttempted < DATEADD(DAY, -1, GETUTCDATE()))
+     AND (DateHandshake IS NULL OR DateHandshake < DATEADD(HOUR, -18, GETUTCDATE()))
+     AND (DateContactAttempted IS NULL OR DateContactAttempted < DATEADD(HOUR, -18, GETUTCDATE()))
   ORDER BY NEWID()
 ";
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -75,12 +75,21 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
 
         }
 
-        public async Task AddUpdateNode(PeerSpec peerSpec)
+        public async Task RecordHandshake(PeerSpec peerSpec)
         {
-            await AddUpdateNodes(new List<PeerSpec> { peerSpec }, null);
+            DataTable dataTable = CreateNodeDataTable(new List<PeerSpec>{peerSpec});
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                DynamicParameters dynamicParameters = new DynamicParameters();
+                dynamicParameters.Add("@tvp", dataTable.AsTableValuedParameter("dbo.NodeTableType"));
+                
+                await connection.ExecuteAsyncWithRetry("[dbo].[RecordNodeHandshake]", dynamicParameters, null, null,
+                    CommandType.StoredProcedure);
+            }
         }
         
-        public async Task AddUpdateNodes(IEnumerable<PeerSpec> peerSpecs, string address)
+        public async Task AddUpdatePeers(IEnumerable<PeerSpec> peerSpecs, string address)
         {
             DataTable dataTable = CreateNodeDataTable(peerSpecs);
 
@@ -100,7 +109,7 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
                     dynamicParameters.Add("@port", null);
                 }
 
-                await connection.ExecuteAsync("[dbo].[AddUpdateDiscoveredNodes]", dynamicParameters, null, null,
+                await connection.ExecuteAsyncWithRetry("[dbo].[AddUpdateDiscoveredNodes]", dynamicParameters, null, null,
                     CommandType.StoredProcedure);
             }
         }

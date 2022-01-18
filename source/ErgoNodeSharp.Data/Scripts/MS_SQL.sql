@@ -12,6 +12,7 @@
 	[PeerCount] [smallint] NULL,
 	[DateAdded] [smalldatetime] NOT NULL,
 	[DateUpdated] [smalldatetime] NULL,
+	[DateHandshake] [smalldatetime] NULL,
 	[DatePeersQueried] [smalldatetime] NULL,
 	[DateContactAttempted] [smalldatetime] NULL,
 	[MissingDate] [smalldatetime] NULL,
@@ -92,7 +93,7 @@ SELECT        [Address], [Port], PublicIP, AgentName, PeerName, [Version], Block
 			  StateType, VerifyingTransactions, PeerCount, DateAdded, DateUpdated, ContinentCode, ContinentName, CountryCode, CountryName, 
 			  RegionCode, RegionName, City, ZipOrPostalCode, Latitude, Longitude, ISP
 FROM          dbo.Nodes
-WHERE        (DatePeersQueried > DATEADD(Day, - 1, GetUTCDate()))
+WHERE        (DateHandshake > DATEADD(Day, - 1, GetUTCDate()))
 
 GO
 
@@ -181,6 +182,89 @@ BEGIN
 	);
 END
 GO
+
+CREATE PROCEDURE [dbo].[RecordNodeHandshake] 
+	@tvp dbo.NodeTableType READONLY	
+
+AS
+BEGIN	
+	SET NOCOUNT ON;
+		
+	MERGE dbo.Nodes AS [Target]
+	USING (
+		SELECT 
+		[Address], 
+		[Port],
+		[PublicIP],
+		[AgentName],
+		[PeerName],
+		[Version],
+		[BlocksToKeep],
+		[NiPoPoWBootstrapped],
+		[StateType],
+		[VerifyingTransactions]	
+		FROM @tvp) AS [Source]
+	( 
+		[Address], 
+		[Port],
+		[PublicIP],
+		[AgentName],
+		[PeerName],
+		[Version],
+		[BlocksToKeep],
+		[NiPoPoWBootstrapped],
+		[StateType],
+		[VerifyingTransactions]	
+	) 
+	ON ([Target].[Address] = [Source].[Address] AND [Target].[Port] = [Source].[Port])
+	WHEN MATCHED THEN
+	UPDATE 
+		SET [AgentName] = [Source].[AgentName],	
+			[PeerName] = [Source].[PeerName],
+			[Version] = [Source].[Version],
+			[BlocksToKeep] = [Source].[BlocksToKeep],
+			[NiPoPoWBootstrapped] = [Source].[NiPoPoWBootstrapped],
+			[StateType] = [Source].[StateType],
+			[VerifyingTransactions] = [Source].[VerifyingTransactions],
+			[DateUpdated] = GETUTCDATE(),
+			[DateHandshake] = GETUTCDATE(),
+			[DateContactAttempted] = NULL,
+			[MissingDate] = NULL,
+			[ContactAttempts] = NULL
+	WHEN NOT MATCHED THEN
+	INSERT (
+		[Address], 
+		[Port],
+		[PublicIP],
+		[AgentName],
+		[PeerName],
+		[Version],
+		[BlocksToKeep],
+		[NiPoPoWBootstrapped],
+		[StateType],
+		[VerifyingTransactions],
+		[DateAdded],
+		[DateUpdated],
+		[DateHandshake]
+	)
+	VALUES (
+		[Source].[Address], 
+		[Source].[Port],
+		[Source].[PublicIP],
+		[Source].[AgentName],
+		[Source].[PeerName],
+		[Source].[Version],
+		[Source].[BlocksToKeep],
+		[Source].[NiPoPoWBootstrapped],
+		[Source].[StateType],
+		[Source].[VerifyingTransactions],
+		GETUTCDATE(),
+		GETUTCDATE(),
+		GETUTCDATE()
+	);
+END
+GO
+
 
 CREATE PROCEDURE RecordFailedConnection 	
 	@address [varchar](50), 

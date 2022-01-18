@@ -140,17 +140,7 @@ BEGIN
 	ON ([Target].[Address] = [Source].[Address] AND [Target].[Port] = [Source].[Port])
 	WHEN MATCHED THEN
 	UPDATE 
-		SET [AgentName] = [Source].[AgentName],	
-			[PeerName] = [Source].[PeerName],
-			[Version] = [Source].[Version],
-			[BlocksToKeep] = [Source].[BlocksToKeep],
-			[NiPoPoWBootstrapped] = [Source].[NiPoPoWBootstrapped],
-			[StateType] = [Source].[StateType],
-			[VerifyingTransactions] = [Source].[VerifyingTransactions],
-			[DateUpdated] = GETUTCDATE(),
-			[DateContactAttempted] = null,
-			[MissingDate] = null,
-			[ContactAttempts] = null
+		SET [DateUpdated] = GETUTCDATE()
 	WHEN NOT MATCHED THEN
 	INSERT (
 		[Address], 
@@ -381,5 +371,49 @@ BEGIN
 		[Source].[NodeCount]		
 	);
 	
+END
+GO
+
+CREATE PROCEDURE GetNodeCountForUpdate
+
+AS
+BEGIN    
+    SELECT Count(*) AS [Count]
+	FROM [dbo].[Nodes]
+	WHERE PublicIP = 1
+		AND (DateHandshake IS NULL OR DateHandshake < DATEADD(HOUR, -18, GETUTCDATE()))
+		AND (DateContactAttempted IS NULL OR DateContactAttempted < DATEADD(HOUR, -18, GETUTCDATE()))  
+END
+GO
+
+CREATE PROCEDURE [dbo].[GetNodesForUpdate]
+(    
+    @topN INT
+)
+AS
+BEGIN    
+  SET NOCOUNT ON
+    
+  SELECT TOP (@topN) [Address], [Port]
+  FROM [dbo].[Nodes]
+  WHERE PublicIP = 1
+     AND (DateHandshake IS NULL OR DateHandshake < DATEADD(HOUR, -18, GETUTCDATE()))
+     AND (DateContactAttempted IS NULL OR DateContactAttempted < DATEADD(HOUR, -18, GETUTCDATE()))
+  ORDER BY NEWID()
+END
+GO
+
+CREATE PROCEDURE GetAddressesForGeoLookup
+(
+    @topN INT
+)
+AS
+BEGIN
+    SET NOCOUNT ON
+
+    SELECT TOP (@topN) [Address]
+	FROM [dbo].[Nodes]
+	WHERE PublicIP = 1 AND (GeoDateUpdated IS NULL OR GeoDateUpdated < DATEADD(MONTH, -1, GETUTCDATE()))
+	ORDER BY NEWID()
 END
 GO

@@ -28,33 +28,20 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
         public async Task<int> GetAddressCountForConnection()
         {
             logger.LogDebug("Executing GetAddressCountForConnection");
-            string sql = @"
-  SELECT Count(*)
-  FROM [dbo].[Nodes]
-  WHERE PublicIP = 1
-     AND (DateHandshake IS NULL OR DateHandshake < DATEADD(HOUR, -18, GETUTCDATE()))
-     AND (DateContactAttempted IS NULL OR DateContactAttempted < DATEADD(HOUR, -18, GETUTCDATE()))  
-";
+            string sql = @"dbo.GetNodeCountForUpdate";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                return await connection.ExecuteScalarAsyncWithRetry<int>(sql);
+                return await connection.ExecuteScalarAsyncWithRetry<int>(sql, null, null, null, CommandType.StoredProcedure);
             }
         }
 
         public async Task<IEnumerable<NodeIdentifier>> GetAddressesForConnection(int topN = 10)
         {
             logger.LogDebug("Executing GetAddressesForConnection");
-            string sql = @$"
-  SELECT TOP ({topN}) [Address], [Port]
-  FROM [dbo].[Nodes]
-  WHERE PublicIP = 1
-     AND (DateHandshake IS NULL OR DateHandshake < DATEADD(HOUR, -18, GETUTCDATE()))
-     AND (DateContactAttempted IS NULL OR DateContactAttempted < DATEADD(HOUR, -18, GETUTCDATE()))
-  ORDER BY NEWID()
-";
+            string sql = "[dbo].[GetNodesForUpdate]";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                return await connection.QueryAsyncWithRetry<NodeIdentifier>(sql);
+                return await connection.QueryAsyncWithRetry<NodeIdentifier>(sql, new {topN}, null, new int(), CommandType.StoredProcedure);
             }
         }
 
@@ -62,15 +49,10 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
         public async Task<IEnumerable<string>> GetAddressesForGeoLookup(int topN = 10)
         {
             logger.LogDebug("Executing GetAddressesForGeoLookup");
-            string sql = $@"
-  SELECT TOP ({topN}) [Address]
-  FROM [dbo].[Nodes]
-  WHERE PublicIP = 1 AND (GeoDateUpdated IS NULL OR GeoDateUpdated < DATEADD(MONTH, -1, GETUTCDATE()))
-  ORDER BY NEWID()
-";
+            string sql = "[dbo].[GetAddressesForGeoLookup]";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                return await connection.QueryAsyncWithRetry<string>(sql);
+                return await connection.QueryAsyncWithRetry<string>(sql, new {topN}, null, null, CommandType.StoredProcedure);
             }
 
         }

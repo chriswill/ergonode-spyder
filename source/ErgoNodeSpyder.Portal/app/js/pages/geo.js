@@ -133,7 +133,7 @@
                     let a = document.createElement('a');
                     a.setAttribute('href', `/geo/country/${item.code}`);
                     a.setAttribute('title', 'View details');
-                    a.setAttribute('class', 'text-gray-800 fw-bolder text-hover-primary mb-1 fs-6 text-start pe-0');
+                    a.setAttribute('class', 'text-gray-800 fw-bolder text-hover-primary mb-1 fs-6 text-start pe-0 text-decoration-underline');
                     a.appendChild(document.createTextNode(item.name));
                     td2.appendChild(a);
                     tr.appendChild(td2);

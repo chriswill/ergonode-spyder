@@ -117,6 +117,8 @@ namespace ErgoNodeSpyder.App.Node
         {
             stream?.Dispose();
             tcpClient?.Dispose();
+            stream = null;
+            tcpClient = null;
         }
     }
 }

@@ -25,7 +25,6 @@ namespace ErgoNodeSpyder.App
         private readonly ErgoNodeSpyderConfiguration spyderConfiguration;
         private readonly IGeoIpService geoIpService;
         private readonly ILogger<WorkerService> logger;
-        private ConnectionListener? listener;
         private Timer? moreNodesTimer;
         private Timer? geoInfoTimer;
         private Timer? analyticsTimer;
@@ -280,25 +279,12 @@ namespace ErgoNodeSpyder.App
                         PeersMessage peersMessage = (PeersMessage)nodeMessage;
                         logger.LogInformation("Received {0} from {1}", nodeMessage, ipAddress);
                         await nodeRepository.AddUpdateNodes(peersMessage.Peers, ipAddress);
-                        
-                        logger.LogInformation("Disconnecting from {0}", ipAddress);
-                        bool result = getPeerRequests.TryRemove(ipAddress, out _);
-                        if (!result)
-                        {
-                            logger.LogDebug("Unable to remove {0} from Peer requests list", ipAddress);
-                        }
-                        result = nodeConnections.TryRemove(ipAddress, out _);
-                        if (!result)
-                        {
-                            logger.LogDebug("Unable to remove {0} from Node connections list", ipAddress);
-                        }
-                        nodeConnection.Disconnect();
-                        nodeConnection.Dispose();
                     }
                     else
                     {
                         logger.LogWarning("Received unsupported message type {0} from {1}", nodeMessage, ipAddress);
                     }
+                    DisconnectNode(nodeConnection, ipAddress);
                 }
                 catch (Exception e)
                 {
@@ -348,6 +334,25 @@ namespace ErgoNodeSpyder.App
                 }
 
             }
+        }
+
+        private void DisconnectNode(NodeConnection nodeConnection, string ipAddress)
+        {
+            logger.LogInformation("Disconnecting from {0}", ipAddress);
+            bool result = getPeerRequests.TryRemove(ipAddress, out _);
+            if (!result)
+            {
+                logger.LogDebug("Unable to remove {0} from Peer requests list", ipAddress);
+            }
+
+            result = nodeConnections.TryRemove(ipAddress, out _);
+            if (!result)
+            {
+                logger.LogDebug("Unable to remove {0} from Node connections list", ipAddress);
+            }
+
+            nodeConnection.Disconnect();
+            nodeConnection.Dispose();
         }
     }
 }

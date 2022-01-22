@@ -54,7 +54,7 @@ namespace ErgoNodeSpyder.App
             logger.LogDebug("Node query event executed");
             if (nodeConnections.Count > 0)
             {
-                logger.LogInformation("{0} node connections stored in dictionary", nodeConnections.Count);
+                logger.LogInformation("{Count} node connections stored in dictionary", nodeConnections.Count);
             }
             
             foreach (KeyValuePair<string, NodeConnection> nodeConnection in nodeConnections)
@@ -65,7 +65,7 @@ namespace ErgoNodeSpyder.App
             int waiting = nodeRepository.GetAddressCountForConnection().Result;
             if (waiting > 0)
             {
-                logger.LogInformation("{0} waiting nodes found for connection", waiting);
+                logger.LogInformation("{Count} waiting nodes found for connection", waiting);
             }
 
             Task<IEnumerable<NodeIdentifier>> task = nodeRepository.GetAddressesForConnection();
@@ -88,14 +88,14 @@ namespace ErgoNodeSpyder.App
 
         public override Task StartAsync(CancellationToken cancellationToken)
         {
-            moreNodesTimer = new Timer(TimeSpan.FromMinutes(2).TotalMilliseconds);
+            moreNodesTimer = new Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
             moreNodesTimer.Elapsed += MoreNodesTimer_Elapsed;
             moreNodesTimer.AutoReset = true;
             moreNodesTimer.Enabled = true;
 
             if (spyderConfiguration.PerformGeoIpLookup)
             {
-                geoInfoTimer = new Timer(TimeSpan.FromMinutes(5).TotalMilliseconds);
+                geoInfoTimer = new Timer(TimeSpan.FromMinutes(15).TotalMilliseconds);
                 geoInfoTimer.Elapsed += GeoInfoTimer_Elapsed;
                 geoInfoTimer.AutoReset = true;
                 geoInfoTimer.Enabled = true;
@@ -134,13 +134,13 @@ namespace ErgoNodeSpyder.App
             List<string> nodeAddresses = task.Result.ToList();
             if (nodeAddresses.Count > 0)
             {
-                logger.LogInformation("{0} waiting nodes found for geo lookup", nodeAddresses.Count);
+                logger.LogInformation("{Count} waiting nodes found for geo lookup", nodeAddresses.Count);
             }
             
             foreach (string address in nodeAddresses)
             {
                 //This is all single-threaded... don't think there is any reason to multi-thread
-                logger.LogDebug("Updating geo information for {0}", address);
+                logger.LogDebug("Updating geo information for {address}", address);
                 GeoIpResponse? response = null;
                 try
                 {
@@ -165,7 +165,7 @@ namespace ErgoNodeSpyder.App
             if (sender is Timer timer)
             {
                 DateTime nextExecution = e.SignalTime.AddMilliseconds(timer.Interval);
-                logger.LogInformation("Analytics timer executed. Next execution time at {0}", nextExecution);
+                logger.LogInformation("Analytics timer executed. Next execution time at {nextExecution}", nextExecution);
             }
             else
             {
@@ -209,7 +209,7 @@ namespace ErgoNodeSpyder.App
             nodeConnection.OnDataReceived += NodeConnectionOnDataReceived;
             nodeConnection.OnConnectionFailed += NodeConnection_OnConnectionFailed;
 
-            logger.LogInformation("Connecting to {0}", address);
+            logger.LogInformation("Connecting to {address}", address);
             string[] parts = address.Split(new char[] { ':' });
             IPAddress ipAddress = IPAddress.Parse(parts[0]);
             int port = int.Parse(parts[1]);
@@ -233,7 +233,7 @@ namespace ErgoNodeSpyder.App
             bool result = nodeConnections.TryRemove(address, out NodeConnection? nodeConnection);
             if (!result)
             {
-                logger.LogDebug("Unable to remove {0} from Node connections list", address);
+                logger.LogDebug("Unable to remove {address} from Node connections list", address);
             }
 
             if (nodeConnection != null)
@@ -266,7 +266,7 @@ namespace ErgoNodeSpyder.App
         private async Task NodeConnectionOnDataReceived(byte[] data, NodeConnection nodeConnection)
         {
             if (data.Length == 0) return;
-            logger.LogInformation("Data received from {0}", nodeConnection.Address);
+            logger.LogDebug("Data received from {0}", nodeConnection.Address);
             string message = data.ToHexString();
             string ipAddress = nodeConnection.Address;
 
@@ -299,7 +299,7 @@ namespace ErgoNodeSpyder.App
             else
             {
                 HandshakeMessage receivedHandshake = HandshakeMessage.Deserialize(data);
-                logger.LogInformation("Received {0} message from {1}", receivedHandshake, ipAddress);
+                logger.LogInformation("Received {handshakeMessage} message from {ipAddress}", receivedHandshake, ipAddress);
 
                 //Have we been sending GetPeers messages to this node already?
                 bool peerRequestsExist = getPeerRequests.TryGetValue(ipAddress, out byte requestCount);
@@ -318,7 +318,7 @@ namespace ErgoNodeSpyder.App
                 byte[] messageBytes = handshakeMessage.Serialize();
 
                 Thread.Sleep(15);
-                logger.LogInformation("Sending {0} message to {1}", handshakeMessage, ipAddress);
+                logger.LogInformation("Sending {handshakeMessage} message to {ipAddress}", handshakeMessage, ipAddress);
                 await nodeConnection.SendData(messageBytes);
 
                 Thread.Sleep(15);
@@ -343,7 +343,7 @@ namespace ErgoNodeSpyder.App
 
         private void DisconnectNode(NodeConnection nodeConnection, string ipAddress)
         {
-            logger.LogInformation("Disconnecting from {ipAddress}", ipAddress);
+            logger.LogDebug("Disconnecting from {ipAddress}", ipAddress);
             getPeerRequests.TryRemove(ipAddress, out _);
 
             bool result = nodeConnections.TryRemove(ipAddress, out _);

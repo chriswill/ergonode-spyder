@@ -141,7 +141,8 @@ namespace ErgoNodeSharp.Models.Messages
                         byte[] hash = Blake2Fast.Blake2b.ComputeHash(32, messageBody).SubArray(0, 4);
                         if (!checksumBytes.SequenceEqual(hash))
                         {
-                            logger?.LogWarning("Checksum does not equal body");
+                            logger?.LogWarning("{Message}:Checksum does not equal body", messageType.ToString());
+                            logger?.LogDebug(bytes.ToHexString());
                         }
                         message.DeserializeBody(messageBody);
                     }

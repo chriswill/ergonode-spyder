@@ -417,3 +417,64 @@ BEGIN
 	ORDER BY NEWID()
 END
 GO
+
+CREATE PROCEDURE [dbo].[GetByDayValues]
+(
+    @topN INT = 10
+)
+AS
+BEGIN
+    
+    SET NOCOUNT ON
+
+    SELECT TOP(@topN) [Day], NodeCount
+	INTO #tempday
+	FROM dbo.NodesByDay WITH (NOLOCK)
+	ORDER BY [Day] DESC
+
+	SELECT CONVERT(VARCHAR, [Day], 23) AS [Key], NodeCount AS [Value]
+	FROM #tempday
+	ORDER BY [Day] ASC
+
+END
+GO
+
+CREATE PROCEDURE [dbo].[GetByWeekValues]
+(
+    @topN INT = 12
+)
+AS
+BEGIN
+    
+    SET NOCOUNT ON
+
+    SELECT TOP(@topN) [Year], [Week], NodeCount
+	INTO #tempweek
+	FROM dbo.NodesByWeek WITH (NOLOCK)
+	ORDER BY [Year] DESC, [Week] DESC
+
+	SELECT CONVERT([VARCHAR](10), DATEADD(wk, DATEDIFF(wk, 6, DATEFROMPARTS([Year], 1, 1)) + ([Week]-1), 6),23) AS [Key], NodeCount AS [Value]
+	FROM #tempweek
+	ORDER BY [Year] ASC, [Week] ASC
+END
+GO
+
+CREATE PROCEDURE [dbo].[GetByMonthValues]
+(
+    @topN INT = 6
+)
+AS
+BEGIN
+    
+    SET NOCOUNT ON
+
+    SELECT TOP(@topN) [Year], [Month], NodeCount
+	INTO #tempmonth
+	FROM dbo.NodesByMonth WITH (NOLOCK)
+	ORDER BY [Year] DESC, [Month] DESC
+
+	SELECT (CAST([Year] AS [VARCHAR](4)) + '-' + FORMAT([Month], 'd2')) AS [Key], NodeCount AS [Value]
+	FROM #tempmonth
+	ORDER BY [Year] ASC, [Month] ASC
+END
+GO

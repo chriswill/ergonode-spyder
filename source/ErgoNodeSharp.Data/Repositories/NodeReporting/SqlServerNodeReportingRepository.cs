@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
 using ErgoNodeSharp.Data.MsSql;
 using ErgoNodeSharp.Models.Configuration;
@@ -290,14 +291,10 @@ SELECT [Address]
 
         public async Task<IEnumerable<StringValuePair>> GetDailyCount(int days = 10)
         {
-            string sql = @$"
-  SELECT CONVERT(varchar, [Day], 23) as [Key], NodeCount as [Value]
-  FROM [dbo].[NodesByDay] WITH (NOLOCK)
-  WHERE [Day] > DATEADD(day, -{days}, CAST (GetUTCDate() as date)) 
-";
+            string sql = "dbo.GetByDayValues";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                return await connection.QueryAsyncWithRetry<StringValuePair>(sql);
+                return await connection.QueryAsyncWithRetry<StringValuePair>(sql, new {topN = days}, null, null, CommandType.StoredProcedure);
             }
         }
 
@@ -315,14 +312,10 @@ SELECT [Address]
 
         public async Task<IEnumerable<StringValuePair>> GetMonthCount(int months = 6)
         {
-            string sql = @$"
-  SELECT (Cast([Year] as [varchar](4)) + '-' + FORMAT([Month], 'd2')) as [Key], NodeCount as [Value]
-  FROM [dbo].[NodesByMonth] WITH (NOLOCK)
-  WHERE DATEFROMPARTS([YEAR], [MONTH], 1) >= DATEADD(month, -{months}, Cast(GETUTCDATE() as date))
-";
+            string sql = "dbo.GetByMonthValues";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                return await connection.QueryAsyncWithRetry<StringValuePair>(sql);
+                return await connection.QueryAsyncWithRetry<StringValuePair>(sql, new {topN = months}, null, null, CommandType.StoredProcedure);
             }
         }
 
@@ -340,14 +333,10 @@ SELECT [Address]
 
         public async Task<IEnumerable<StringValuePair>> GetWeekCount(int weeks = 12)
         {
-            string sql = @$"
-  SELECT CONVERT([varchar], DATEADD(wk, DATEDIFF(wk, 6, DATEFROMPARTS([Year], 1, 1)) + ([Week]-1), 6),23) as [Key], NodeCount as [Value]
-  FROM [dbo].[NodesByWeek] WITH (NOLOCK)
-  WHERE CAST(DATEADD(wk, DATEDIFF(wk, 6, DATEFROMPARTS([Year], 1, 1)) + ([Week]-1), 6) as date) >= DATEADD(day, -{weeks}, CAST (GetUTCDate() as date))
-";
+            string sql = "dbo.GetByWeekValues";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                return await connection.QueryAsyncWithRetry<StringValuePair>(sql);
+                return await connection.QueryAsyncWithRetry<StringValuePair>(sql, new { topN = weeks }, null, null, CommandType.StoredProcedure);
             }
         }
 

@@ -30,7 +30,7 @@ namespace ErgoNodeSpyder.App
         public void Start(IPAddress address, int port)
         {
             listener = new TcpListener(address, port);
-            logger?.LogInformation("Started server on {0}:{1}", address, port);
+            logger?.LogInformation("Started server on {address}:{port}", address, port);
 
             Task.Run(ListenForClients);
             
@@ -49,7 +49,7 @@ namespace ErgoNodeSpyder.App
             {
                 TcpClient client = listener.AcceptTcpClient();
                 
-                logger?.LogInformation("New client connected from {0}", client.GetAddress());
+                logger?.LogInformation("New client connected from {address}", client.GetAddress());
 
                 OnClientConnected?.Invoke(client).GetAwaiter().GetResult();
 

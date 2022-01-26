@@ -227,7 +227,7 @@ namespace ErgoNodeSpyder.App
 
         private async Task NodeConnection_OnConnectionFailed(string address)
         {
-            logger.LogError("Connection failed to {0}", address);
+            logger.LogError("Connection failed to {address}", address);
             await nodeRepository.RecordFailedConnection(address);
             getPeerRequests.TryRemove(address, out _);
 
@@ -267,7 +267,7 @@ namespace ErgoNodeSpyder.App
         private async Task NodeConnectionOnDataReceived(byte[] data, NodeConnection nodeConnection)
         {
             if (data.Length == 0) return;
-            logger.LogDebug("Data received from {0}", nodeConnection.Address);
+            logger.LogDebug("Data received from {address}", nodeConnection.Address);
             string message = data.ToHexString();
             string ipAddress = nodeConnection.Address;
 
@@ -283,12 +283,12 @@ namespace ErgoNodeSpyder.App
                     if (nodeMessage.MessageType == MessageType.Peers)
                     {
                         PeersMessage peersMessage = (PeersMessage)nodeMessage;
-                        logger.LogInformation("Received {0} from {1}", nodeMessage, ipAddress);
+                        logger.LogInformation("Received {message} from {address}", nodeMessage, ipAddress);
                         await nodeRepository.AddUpdatePeers(peersMessage.Peers, ipAddress);
                     }
                     else
                     {
-                        logger.LogWarning("Received unsupported message type {0} from {1}", nodeMessage, ipAddress);
+                        logger.LogWarning("Received unsupported message type {nodeMessage} from {ipAddress}", nodeMessage, ipAddress);
                     }
                     DisconnectNode(nodeConnection, ipAddress);
                 }

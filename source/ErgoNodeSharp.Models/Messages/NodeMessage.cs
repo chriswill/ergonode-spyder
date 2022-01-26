@@ -142,7 +142,7 @@ namespace ErgoNodeSharp.Models.Messages
                         if (!checksumBytes.SequenceEqual(hash))
                         {
                             logger?.LogWarning("{Message}:Checksum does not equal body", messageType.ToString());
-                            logger?.LogDebug(bytes.ToHexString());
+                            logger?.LogWarning("Message: {bytes}", bytes.ToHexString());
                         }
                         message.DeserializeBody(messageBody);
                     }

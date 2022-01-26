@@ -58,7 +58,7 @@ namespace ErgoNodeSpyder.App.Node
             Address = client.GetAddress();
             stream = tcpClient.GetStream();
             byte[] bytes = handshakeMessage.Serialize();
-            logger?.LogInformation("Sending {0} message to {1}", "handshake", Address);
+            logger?.LogInformation("Sending {message} message to {address}", "handshake", Address);
             await SendData(bytes);
         }
 

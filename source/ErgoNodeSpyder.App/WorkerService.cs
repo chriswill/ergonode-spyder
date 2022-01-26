@@ -13,6 +13,7 @@ using ErgoNodeSharp.Models.Responses;
 using ErgoNodeSharp.Services.GeoIp;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Timer = System.Timers.Timer;
 
 namespace ErgoNodeSpyder.App
@@ -300,8 +301,10 @@ namespace ErgoNodeSpyder.App
             {
                 HandshakeMessage receivedHandshake = HandshakeMessage.Deserialize(data);
                 logger.LogInformation("Received {handshakeMessage} message from {ipAddress}", receivedHandshake, ipAddress);
-                await nodeRepository.RecordHandshake(receivedHandshake.PeerSpec);
+                logger.LogDebug("Peerspec for {ipAddress}: {peerspec}", ipAddress, JsonConvert.SerializeObject(receivedHandshake.PeerSpec));
 
+                await nodeRepository.RecordHandshake(receivedHandshake.PeerSpec, ipAddress);
+                
                 //Have we been sending GetPeers messages to this node already?
                 bool peerRequestsExist = getPeerRequests.TryGetValue(ipAddress, out byte requestCount);
                 if (peerRequestsExist && requestCount >= 5)

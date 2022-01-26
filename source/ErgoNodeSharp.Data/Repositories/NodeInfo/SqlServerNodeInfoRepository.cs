@@ -27,7 +27,7 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
 
         public async Task<int> GetAddressCountForConnection()
         {
-            logger.LogDebug("Executing GetAddressCountForConnection");
+            logger.LogDebug("Executing SqlServerNodeInfoRepository method GetAddressCountForConnection");
             string sql = @"dbo.GetNodeCountForUpdate";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -37,7 +37,7 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
 
         public async Task<IEnumerable<NodeIdentifier>> GetAddressesForConnection(int topN = 10)
         {
-            logger.LogDebug("Executing GetAddressesForConnection");
+            logger.LogDebug("Executing SqlServerNodeInfoRepository method GetAddressesForConnection");
             string sql = "[dbo].[GetNodesForUpdate]";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -48,7 +48,7 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
         //Geo location will update every month
         public async Task<IEnumerable<string>> GetAddressesForGeoLookup(int topN = 10)
         {
-            logger.LogDebug("Executing GetAddressesForGeoLookup");
+            logger.LogDebug("Executing SqlServerNodeInfoRepository method GetAddressesForGeoLookup");
             string sql = "[dbo].[GetAddressesForGeoLookup]";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -57,10 +57,14 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
 
         }
 
-        public async Task RecordHandshake(PeerSpec peerSpec)
+        public async Task RecordHandshake(PeerSpec peerSpec, string address)
         {
-            DataTable dataTable = CreateNodeDataTable(new List<PeerSpec>{peerSpec});
+            logger.LogDebug("Executing SqlServerNodeInfoRepository method RecordHandshake method for {address}", address);
+            //sets the value of the declared address to whatever address we thought we were connected with
+            peerSpec.DeclaredAddress = address;
 
+            DataTable dataTable = CreateNodeDataTable(new List<PeerSpec>{peerSpec});
+            
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 DynamicParameters dynamicParameters = new DynamicParameters();
@@ -73,6 +77,7 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
         
         public async Task AddUpdatePeers(IEnumerable<PeerSpec> peerSpecs, string address)
         {
+            logger.LogDebug("Executing SqlServerNodeInfoRepository method AddUpdatePeers");
             DataTable dataTable = CreateNodeDataTable(peerSpecs);
 
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -98,6 +103,7 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
 
         public async Task RecordFailedConnection(string address)
         {
+            logger.LogDebug("Executing SqlServerNodeInfoRepository method RecordFailedConnection");
             string[] parts = address.Split(":");
             int port = int.Parse(parts[1]);
 
@@ -110,6 +116,7 @@ namespace ErgoNodeSharp.Data.Repositories.NodeInfo
 
         public async Task UpdateNodeGeo(GeoIpResponse response)
         {
+            logger.LogDebug("Executing SqlServerNodeInfoRepository method UpdateNodeGeo");
             string command = @"
 Update dbo.Nodes
 SET
@@ -150,7 +157,7 @@ WHERE
 
         public async Task PerformMaintenanceAndAnalytics()
         {
-            logger.LogInformation("Executing PerformMaintenanceAndAnalytics");
+            logger.LogInformation("Executing SqlServerNodeInfoRepository method PerformMaintenanceAndAnalytics");
             string sql = "dbo.DailyMaintenanceAndAnalytics";
 
             try

@@ -8,14 +8,13 @@ namespace ErgoNodeSharp.Data
 {
     public interface INodeInfoRepository
     {
-
         public Task<int> GetAddressCountForConnection();
 
         public Task<IEnumerable<NodeIdentifier>> GetAddressesForConnection(int topN = 10);
 
         public Task<IEnumerable<string>> GetAddressesForGeoLookup(int topN = 10);
 
-        public Task RecordHandshake(PeerSpec node);
+        public Task RecordHandshake(PeerSpec node, string address);
 
         public Task AddUpdatePeers(IEnumerable<PeerSpec> nodes, string address);
 

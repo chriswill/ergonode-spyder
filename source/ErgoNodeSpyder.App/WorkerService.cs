@@ -300,6 +300,7 @@ namespace ErgoNodeSpyder.App
             {
                 HandshakeMessage receivedHandshake = HandshakeMessage.Deserialize(data);
                 logger.LogInformation("Received {handshakeMessage} message from {ipAddress}", receivedHandshake, ipAddress);
+                await nodeRepository.RecordHandshake(receivedHandshake.PeerSpec);
 
                 //Have we been sending GetPeers messages to this node already?
                 bool peerRequestsExist = getPeerRequests.TryGetValue(ipAddress, out byte requestCount);
@@ -310,8 +311,6 @@ namespace ErgoNodeSpyder.App
                     logger.LogWarning("Node {ipAddress} was disconnected because it would not respond with a Peers message", ipAddress);
                     return;
                 }
-
-                await nodeRepository.RecordHandshake(receivedHandshake.PeerSpec);
 
                 //this is a handshake
                 HandshakeMessage handshakeMessage = HandshakeMessage.CreateHandshake(ergoConfiguration, networkConfiguration);

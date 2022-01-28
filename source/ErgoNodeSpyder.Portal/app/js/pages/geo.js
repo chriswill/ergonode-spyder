@@ -203,8 +203,8 @@
 
     $(document).ready(function () {
         updateContinents();
-        updateCountries(10);
-        updateIsps(10);
+        updateCountries(5);
+        updateIsps(5);
 
         $('.country-chooser').click(function () {
             

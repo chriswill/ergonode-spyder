@@ -3,4 +3,6 @@ Disallow: /set-mode/
 Disallow: /api/nodes
 Disallow: /NodeSpyder.postman_collection.json
 
+Allow: /
+
 Sitemap: https://ergo.nodespyder.io/sitemap.xml

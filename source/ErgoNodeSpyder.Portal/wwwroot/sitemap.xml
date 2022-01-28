@@ -3,21 +3,55 @@
 	<url>
 		<loc>https://ergo.nodespyder.io/</loc>
 		<lastmod>2022-01-09</lastmod>
+		<changefreq>daily</changefreq>
 		<priority>1.00</priority>
 	</url>
 	<url>
 		<loc>https://ergo.nodespyder.io/geo</loc>
 		<lastmod>2022-01-09</lastmod>
-		<priority>0.80</priority>
+		<changefreq>daily</changefreq>
 	</url>
 	<url>
 		<loc>https://ergo.nodespyder.io/about</loc>
 		<lastmod>2022-01-09</lastmod>
-		<priority>0.80</priority>
 	</url>
 	<url>
 		<loc>https://ergo.nodespyder.io/api</loc>
 		<lastmod>2022-01-09</lastmod>
-		<priority>0.80</priority>
+	</url>
+	<url>
+		<loc>https://ergo.nodespyder.io/geo/country/DE</loc>
+		<lastmod>2022-01-27</lastmod>
+		<changefreq>daily</changefreq>
+	</url>
+	<url>
+		<loc>https://ergo.nodespyder.io/geo/country/US</loc>
+		<lastmod>2022-01-27</lastmod>
+		<changefreq>daily</changefreq>
+	</url>
+	<url>
+		<loc>https://ergo.nodespyder.io/geo/country/FR</loc>
+		<lastmod>2022-01-27</lastmod>
+		<changefreq>daily</changefreq>
+	</url>
+	<url>
+		<loc>https://ergo.nodespyder.io/geo/country/SG</loc>
+		<lastmod>2022-01-27</lastmod>
+		<changefreq>daily</changefreq>
+	</url>
+	<url>
+		<loc>https://ergo.nodespyder.io/geo/country/GB</loc>
+		<lastmod>2022-01-27</lastmod>
+		<changefreq>daily</changefreq>
+	</url>
+	<url>
+		<loc>https://ergo.nodespyder.io/geo/country/CA</loc>
+		<lastmod>2022-01-27</lastmod>
+		<changefreq>daily</changefreq>
+	</url>
+	<url>
+		<loc>https://ergo.nodespyder.io/geo/country/PL</loc>
+		<lastmod>2022-01-27</lastmod>
+		<changefreq>daily</changefreq>
 	</url>
 </urlset>
